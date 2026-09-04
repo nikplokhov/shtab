@@ -1,0 +1,1409 @@
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Штаб</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0a1322;--card:#152841;--card2:#0f1b2e;--line:#20365526;--line2:#2a4160;--green:#6ee87d;
+--glow:rgba(110,232,125,.22);--txt:#eaf1f8;--mut:#7d90a8;--amber:#e8c46e;--red:#e87d7d;
+--gold:#f5c84b;--silver:#b9c6d6;--bronze:#d8925c}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+body{background:radial-gradient(130% 55% at 50% -8%,#14273f 0%,var(--bg) 60%);color:var(--txt);
+font:15px/1.45 "SF Mono",ui-monospace,Menlo,Consolas,monospace;min-height:100vh;padding-bottom:100px}
+.bgfx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.col{position:absolute;top:0;color:var(--green);font-size:14px;line-height:2.4;white-space:pre;
+text-align:center;opacity:.06;animation:fall linear infinite}
+@keyframes fall{from{transform:translateY(-50%)}to{transform:translateY(0)}}
+.wrap{position:relative;z-index:1;max-width:430px;margin:0 auto;padding:14px 14px 0}
+.logo{position:relative;text-align:center;color:var(--green);font-weight:700;font-size:22px;letter-spacing:2px;padding:6px 0 14px;
+text-shadow:0 0 18px var(--glow)}
+.logo .cur{animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.crownbtn{position:absolute;right:0;top:2px;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;
+justify-content:center;color:var(--amber);background:linear-gradient(180deg,#4d3d1c88,#302a12);border:1px solid #6b5a2f99;
+box-shadow:0 6px 18px rgba(245,200,75,.15)}
+.crownbtn svg.i{width:20px;height:20px}
+.card{background:linear-gradient(165deg,var(--card) 0%,var(--card2) 70%);border:1px solid var(--line2);
+border-radius:24px;padding:18px;margin-bottom:14px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.card.hero{border-color:#2f5a41;background:
+ radial-gradient(90% 55% at 50% 0%,rgba(110,232,125,.09) 0%,transparent 60%),
+ linear-gradient(165deg,var(--card) 0%,var(--card2) 70%)}
+.pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;background:#12301f;
+border:1px solid #245c37;color:var(--green);border-radius:999px;padding:5px 12px;font-size:11px;letter-spacing:1.5px}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.hero-title{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;letter-spacing:.5px;
+white-space:nowrap;overflow:hidden}
+.hero-title .t{overflow:hidden;text-overflow:ellipsis}
+.ring{position:relative;width:206px;height:206px;margin:8px auto 12px}
+.ring svg.r{transform:rotate(-90deg);display:block}
+.ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .num b{font:800 46px/1 -apple-system,"SF Pro Display",Inter,Roboto,system-ui,sans-serif;letter-spacing:-1px}
+.ring .num span{color:var(--mut);font-size:9px;letter-spacing:1.5px;margin-top:5px;max-width:120px;text-align:center;line-height:1.5}
+.sub{text-align:center;font-size:14px}
+.sub small{display:block;color:var(--mut);margin-top:4px;font-size:12px}
+.hr{height:1px;background:var(--line2);opacity:.5;margin:16px 0}
+.rowline{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:11.5px;
+letter-spacing:1px;color:var(--mut);white-space:nowrap}
+.rowline b{color:var(--txt)}
+.bar{height:9px;border-radius:6px;background:#0b1626;border:1px solid var(--line2);margin:9px 0 14px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#2f9e4f,var(--green));border-radius:6px;
+box-shadow:0 0 12px var(--glow)}
+.btnrow{display:flex;gap:10px;margin-bottom:10px}
+.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;
+background:linear-gradient(135deg,#4fd97a 0%,#22a04d 55%,#166b34 100%);border:1px solid #5fe88a55;color:#eafff0;
+border-radius:14px;padding:14px 6px;font-size:11px;letter-spacing:1px;font-weight:700;
+box-shadow:0 8px 22px rgba(79,217,122,.28),inset 0 1px 0 rgba(255,255,255,.28)}
+.btn.dim{background:linear-gradient(135deg,#2a4b66 0%,#1a3049 60%,#12233a 100%);border-color:#3e6a9155;
+box-shadow:0 8px 22px rgba(60,120,200,.18),inset 0 1px 0 rgba(255,255,255,.14)}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(180deg,#b6f397,#7ce86e);
+color:#08240e;border-radius:18px;padding:16px;font-weight:700;font-size:14px;letter-spacing:2px;margin:2px 0 14px;
+box-shadow:0 8px 28px rgba(110,232,125,.35)}
+.cta svg.i{stroke:#08240e}
+h2{display:flex;align-items:center;justify-content:space-between;font-size:18px;letter-spacing:.5px;
+margin:4px 2px 12px;font-weight:700}
+.balance{white-space:nowrap;background:#12301f;border:1px solid #245c37;border-radius:999px;
+padding:5px 13px;font-size:12px;color:var(--green);font-weight:400}
+.trow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line2)}
+.trow:last-child{border-bottom:0;padding-bottom:2px}
+.trow:first-child{padding-top:2px}
+.place{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+font-weight:700;font-size:13px;background:#0b1626;border:1px solid var(--line2);color:var(--mut)}
+.place.g{background:linear-gradient(180deg,#f5c84b33,#0b1626);border-color:#8a7228;color:var(--gold)}
+.place.s{background:linear-gradient(180deg,#b9c6d633,#0b1626);border-color:#5e6c7d;color:var(--silver)}
+.place.b{background:linear-gradient(180deg,#d8925c33,#0b1626);border-color:#7d5432;color:var(--bronze)}
+.tinfo{flex:1;min-width:0}
+.tname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.tbar{height:5px;border-radius:4px;background:#0b1626;margin-top:7px;overflow:hidden}
+.tbar i{display:block;height:100%;background:linear-gradient(90deg,#2f9e4f,var(--green));opacity:.8}
+.tval{flex:none;text-align:right;white-space:nowrap;font-size:14px;font-weight:700}
+.tval small{font-weight:400;font-size:11px;margin-left:5px}
+.up{color:var(--green)}.down{color:var(--red)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bcard{background:linear-gradient(165deg,var(--card) 0%,var(--card2) 80%);border:1px solid var(--line2);
+border-radius:18px;padding:14px}
+.bcard .em{font-size:23px}
+.gcard{position:relative;overflow:hidden;background:linear-gradient(165deg,var(--card) 0%,var(--card2) 80%);
+border:1px solid var(--line2);border-radius:18px;padding:14px;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.gcard::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 20% 0%,color-mix(in srgb,var(--a) 22%,transparent),transparent 60%)}
+.gcard>*{position:relative}
+.gcard .em{font-size:26px}
+.gcard .nm{font-weight:700;font-size:13.5px;margin:8px 0 3px}
+.gcard .hint{color:var(--mut);font-size:11px;line-height:1.4;min-height:30px}
+.gcard .cnt{margin-top:8px;font-size:10.5px;color:var(--a)}
+.gcard.soon{opacity:.75;border-style:dashed}
+.bcard .nm{font-weight:700;font-size:13px;margin:8px 0 3px}
+.bcard .hint{color:var(--mut);font-size:11px;line-height:1.4;min-height:30px}
+.bcard .cnt{margin-top:8px;font-size:11px;color:var(--mut)}
+.bcard.free{border-color:#2f5a41;background:radial-gradient(120% 90% at 50% 0%,rgba(110,232,125,.08),transparent 70%),
+linear-gradient(165deg,var(--card),var(--card2))}
+.bcard.free .cnt{color:var(--green)}
+.srow{display:flex;align-items:center;gap:13px;background:linear-gradient(165deg,var(--card),var(--card2));
+border:1px solid var(--line2);border-radius:18px;padding:15px;margin-bottom:11px}
+.srow.hit{border-color:#2f6b40;box-shadow:0 0 0 1px #2f6b40 inset,0 10px 26px rgba(110,232,125,.08)}
+.sic{width:42px;height:42px;border-radius:13px;flex:none;display:flex;align-items:center;justify-content:center;
+background:#12301f;border:1px solid #245c37;color:var(--green);font-size:21px}
+.sinfo{flex:1;min-width:0}
+.snm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.snm .tag{font-size:9px;letter-spacing:1px;color:var(--amber);border:1px solid #6b5a2f;border-radius:6px;
+padding:2px 6px;margin-left:7px;vertical-align:2px}
+.sds{color:var(--mut);font-size:11px;margin-top:3px;line-height:1.45}
+.spr{text-align:right;flex:none}
+.spr b{color:var(--green);font-size:17px}
+.spr small{display:block;color:var(--mut);font-size:10px;margin-top:2px}
+.go{color:var(--green);font-size:18px;flex:none}
+.toggle{width:46px;height:26px;border-radius:999px;background:#0b1626;border:1px solid var(--line2);position:relative;flex:none}
+.toggle i{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#3a4c63}
+.note{color:var(--mut);font-size:11px;text-align:center;margin:2px 0 12px;line-height:1.55}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;padding:10px 14px 24px;
+background:linear-gradient(180deg,transparent,#08101d 42%)}
+.tabbar{display:flex;gap:2px;background:#101d31f2;border:1px solid var(--line2);border-radius:24px;padding:7px;
+backdrop-filter:blur(10px);width:100%;max-width:402px}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--mut);border-radius:17px;
+padding:9px 2px;font-size:8.5px;letter-spacing:.8px;border:1px solid transparent;min-width:0}
+.tab svg.i{width:22px;height:22px}
+.tab.on{background:linear-gradient(180deg,#1c4d2b88,#1c4d2b22);color:var(--green);border-color:#2f6b4066}
+section{display:none}section.on{display:block}
+/* --- playable test games --- */
+.wallet{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(165deg,#132238,#0f1b2e);
+border:1px solid var(--line2);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-size:11px;letter-spacing:1px;color:var(--mut)}
+.wallet b{font-size:18px;color:var(--txt);letter-spacing:0}
+.stakes{display:flex;gap:6px;margin:-4px 0 12px}
+.stakes span{flex:1;text-align:center;padding:8px 0;border-radius:10px;border:1px solid var(--line2);background:#0f1b2e;font-size:12px;color:var(--mut)}
+.stakes span.on{border-color:#2f6b40;background:#12301f;color:var(--green);font-weight:700}
+.mode{display:inline-block;margin-left:8px;font-size:9px;letter-spacing:1px;padding:3px 7px;border-radius:6px;border:1px solid #6b5a2f;color:var(--amber)}
+.mode.live{border-color:#2f6b40;color:var(--green)}
+.duelrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.duelrow:last-child{border-bottom:0}
+.duelrow .who{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.duelrow .cta{margin:0;padding:9px 12px;font-size:11px}
+.pline{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.pline:last-child{border-bottom:0}
+.pline span:first-child{color:var(--mut);font-size:11px;letter-spacing:1px;white-space:nowrap}
+.pline b{text-align:right}
+.pbadges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pbadges span{background:#12301f;border:1px solid #245c37;border-radius:10px;padding:5px 9px;font-size:12px}
+.wallet .d{font-size:14px;font-weight:700}
+.testbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(165deg,#302a12,#1c1a10);
+border:1px solid #6b5a2f99;border-radius:16px;padding:11px 14px;margin-bottom:12px;font-size:11px;color:var(--amber);letter-spacing:.5px}
+.testbar b{color:#ffe08a;font-size:14px}
+.gcard.play{cursor:pointer;border-color:#2f6b40}
+.gcard.play .cnt{color:var(--green)}
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(6,12,22,.985);display:none;overflow:auto;padding:14px 14px 40px}
+.overlay.on{display:block}
+.ov{max-width:430px;margin:0 auto}
+.ovhead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#132238;
+border:1px solid var(--line2);color:var(--txt);font-size:18px;flex:none}
+.ovhead h2{margin:0;flex:1}
+.wheelwrap{position:relative;width:260px;height:260px;margin:14px auto}
+.wheel{position:relative;width:100%;height:100%;border-radius:50%;border:6px solid #1b3350;box-shadow:0 0 40px var(--glow),inset 0 0 30px rgba(0,0,0,.5);
+background:conic-gradient(#2f9e4f 0 45deg,#132238 45deg 90deg,#f5c84b 90deg 135deg,#132238 135deg 180deg,#e87d7d 180deg 225deg,#132238 225deg 270deg,#6fb7ff 270deg 315deg,#132238 315deg 360deg);
+transition:transform 4.2s cubic-bezier(.12,.75,.12,1)}
+.wlab{position:absolute;inset:0;pointer-events:none}
+.wlab span{position:absolute;left:50%;top:50%;font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 3px #000;
+transform-origin:0 0}
+.pin{position:absolute;z-index:3;left:50%;top:-10px;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;
+border-right:12px solid transparent;border-top:22px solid var(--green);filter:drop-shadow(0 0 8px var(--green))}
+.result{text-align:center;font-size:15px;min-height:46px;margin:8px 0 12px;line-height:1.5}
+.result b{color:var(--green);font-size:22px}
+.qcard{background:linear-gradient(165deg,var(--card),var(--card2));border:1px solid var(--line2);border-radius:20px;padding:18px;margin-bottom:12px}
+.qtop{display:flex;justify-content:space-between;color:var(--mut);font-size:11px;letter-spacing:1px;margin-bottom:12px}
+.qtimer{height:6px;border-radius:4px;background:#0b1626;overflow:hidden;margin-bottom:14px}
+.qtimer i{display:block;height:100%;background:linear-gradient(90deg,#e87d7d,#f5c84b,var(--green));width:100%;transition:width 1s linear}
+.q{font-size:15px;line-height:1.5;margin-bottom:14px;font-weight:700}
+.opt{display:block;width:100%;text-align:left;background:#0f1b2e;border:1px solid var(--line2);color:var(--txt);border-radius:14px;
+padding:13px 14px;margin-bottom:9px;font:inherit;font-size:13.5px}
+.opt.ok{border-color:#2f9e4f;background:#12301f}
+.opt.bad{border-color:#a34a4a;background:#301515}
+.rps{display:flex;gap:10px;margin:14px 0}
+.rps button{flex:1;font-size:40px;background:linear-gradient(165deg,var(--card),var(--card2));border:1px solid var(--line2);
+border-radius:18px;padding:18px 0;color:#fff}
+.rps button:active{transform:scale(.96)}
+
+.reels{display:flex;justify-content:center;gap:10px;margin:16px 0}
+.reel{width:86px;height:96px;border-radius:16px;background:linear-gradient(180deg,#0b1626,#132238);border:1px solid var(--line2);
+display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:inset 0 6px 14px rgba(0,0,0,.5)}
+.reel.spin{animation:blur .08s linear infinite}
+@keyframes blur{50%{filter:blur(2px);transform:translateY(-3px)}}
+.reel.win{border-color:var(--green);box-shadow:0 0 18px var(--glow),inset 0 6px 14px rgba(0,0,0,.5)}
+.mines{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
+.cell{aspect-ratio:1;border-radius:12px;background:linear-gradient(180deg,#1a2f4a,#0f1b2e);border:1px solid var(--line2);
+display:flex;align-items:center;justify-content:center;font-size:22px}
+.cell.safe{background:linear-gradient(180deg,#1c4d2b,#12301f);border-color:#2f6b40}
+.cell.boom{background:linear-gradient(180deg,#5a2323,#301515);border-color:#a34a4a}
+.mult{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0 10px;font-size:10px;color:var(--mut);letter-spacing:.8px;white-space:nowrap}
+.mult span{display:flex;flex-direction:column;align-items:center;gap:3px}
+.mult b{color:var(--green);font-size:18px}
+.btn2{display:flex;gap:10px}
+.btn2 .cta{flex:1;margin:0;padding:14px 8px;font-size:12px;white-space:nowrap}
+.btn2 .cta.ghost{background:linear-gradient(180deg,#1a2f4a,#0f1b2e);color:var(--txt);box-shadow:none;border:1px solid var(--line2)}
+.hand{display:flex;gap:6px;flex-wrap:wrap;min-height:54px;margin:6px 0}
+.cardf{width:40px;height:54px;border-radius:8px;background:#f4f6fa;color:#111;display:flex;align-items:center;justify-content:center;
+font:700 15px/1 -apple-system,system-ui,sans-serif;box-shadow:0 3px 8px rgba(0,0,0,.5)}
+.cardf.red{color:#c0392b}
+.cardf.back{background:repeating-linear-gradient(45deg,#2a4a7a,#2a4a7a 4px,#1c3560 4px,#1c3560 8px)}
+.hlabel{display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px;color:var(--mut);margin-top:10px}
+.hlabel b{color:var(--txt)}
+.coin{width:120px;height:120px;border-radius:50%;margin:12px auto;display:flex;align-items:center;justify-content:center;font-size:56px;
+background:radial-gradient(circle at 35% 30%,#ffe08a,#b8860b 70%);box-shadow:0 10px 30px rgba(245,200,75,.35)}
+.coin.flip{animation:flip .9s ease-in-out}
+@keyframes flip{0%{transform:rotateY(0)}100%{transform:rotateY(1440deg)}}
+.pot{text-align:center;font-size:12px;color:var(--mut);letter-spacing:1px}
+.pot b{display:block;color:var(--green);font-size:30px;margin-top:4px}
+.dicebox{display:flex;justify-content:space-around;align-items:center;font-size:64px;margin:14px 0}
+.dicebox small{display:block;font-size:11px;color:var(--mut);letter-spacing:1px;text-align:center;margin-top:6px}
+.dicebox .roll{animation:roll .6s linear infinite}
+@keyframes roll{to{transform:rotate(360deg)}}
+.duel{display:flex;justify-content:space-around;align-items:center;font-size:44px;margin:10px 0}
+.duel small{display:block;font-size:11px;color:var(--mut);letter-spacing:1px;text-align:center;margin-top:6px}
+
+.couple{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line2);font-size:13.5px}
+.couple:last-child{border-bottom:0}
+.couple .heart{flex:none;font-size:13px}
+.couple .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.couple .days{margin-left:auto;color:var(--mut);font-size:11px;white-space:nowrap}
+.wolf{display:flex;align-items:center;gap:11px;background:radial-gradient(110% 120% at 0% 0%,rgba(245,200,75,.10),transparent 60%),
+linear-gradient(165deg,var(--card),var(--card2));border:1px solid #6b5a2f66;border-radius:18px;padding:14px;margin-bottom:12px;
+font-size:12.5px;line-height:1.5}
+.wolf .cr{color:var(--amber)}
+</style></head><body>
+<div class="bgfx"><span class="col" style="left:4%;animation-duration:26s;animation-delay:0s">H
+H
+0
+1
+F
+F
+1
+0
+H
+H
+1
+1
+1
+H
+H
+H
+1
+F
+F
+H
+F
+0
+F
+0
+1
+1
+1
+1
+1
+H
+H
+H
+0
+1
+F
+F
+1
+0
+H
+H
+1
+1
+1
+H
+H
+H
+1
+F
+F
+H
+F
+0
+F
+0
+1
+1
+1
+1
+1
+H</span><span class="col" style="left:16%;animation-duration:33s;animation-delay:-5s">0
+F
+F
+H
+1
+H
+0
+1
+0
+1
+1
+0
+1
+H
+0
+F
+0
+H
+0
+F
+H
+0
+0
+F
+F
+1
+1
+F
+0
+F
+0
+F
+F
+H
+1
+H
+0
+1
+0
+1
+1
+0
+1
+H
+0
+F
+0
+H
+0
+F
+H
+0
+0
+F
+F
+1
+1
+F
+0
+F</span><span class="col" style="left:28%;animation-duration:40s;animation-delay:-10s">1
+H
+F
+0
+1
+1
+F
+F
+F
+1
+0
+0
+H
+F
+0
+F
+F
+F
+F
+H
+1
+0
+0
+H
+F
+0
+0
+0
+H
+1
+1
+H
+F
+0
+1
+1
+F
+F
+F
+1
+0
+0
+H
+F
+0
+F
+F
+F
+F
+H
+1
+0
+0
+H
+F
+0
+0
+0
+H
+1</span><span class="col" style="left:40%;animation-duration:47s;animation-delay:-15s">1
+1
+1
+F
+0
+1
+H
+0
+1
+0
+0
+0
+F
+1
+0
+F
+1
+H
+F
+0
+1
+0
+0
+0
+1
+F
+F
+F
+0
+0
+1
+1
+1
+F
+0
+1
+H
+0
+1
+0
+0
+0
+F
+1
+0
+F
+1
+H
+F
+0
+1
+0
+0
+0
+1
+F
+F
+F
+0
+0</span><span class="col" style="left:52%;animation-duration:26s;animation-delay:-20s">1
+0
+0
+H
+0
+H
+0
+0
+0
+0
+1
+F
+F
+H
+0
+H
+0
+H
+0
+H
+1
+F
+F
+0
+0
+H
+1
+H
+F
+0
+1
+0
+0
+H
+0
+H
+0
+0
+0
+0
+1
+F
+F
+H
+0
+H
+0
+H
+0
+H
+1
+F
+F
+0
+0
+H
+1
+H
+F
+0</span><span class="col" style="left:64%;animation-duration:33s;animation-delay:-25s">H
+1
+0
+H
+F
+F
+H
+0
+H
+0
+0
+F
+0
+H
+1
+0
+0
+1
+0
+1
+0
+1
+1
+F
+1
+H
+H
+F
+1
+1
+H
+1
+0
+H
+F
+F
+H
+0
+H
+0
+0
+F
+0
+H
+1
+0
+0
+1
+0
+1
+0
+1
+1
+F
+1
+H
+H
+F
+1
+1</span><span class="col" style="left:76%;animation-duration:40s;animation-delay:-30s">H
+F
+1
+0
+0
+H
+F
+0
+F
+H
+F
+F
+H
+1
+F
+F
+1
+F
+H
+0
+H
+F
+1
+F
+F
+0
+H
+0
+1
+F
+H
+F
+1
+0
+0
+H
+F
+0
+F
+H
+F
+F
+H
+1
+F
+F
+1
+F
+H
+0
+H
+F
+1
+F
+F
+0
+H
+0
+1
+F</span><span class="col" style="left:88%;animation-duration:47s;animation-delay:-35s">0
+H
+H
+F
+F
+H
+H
+0
+H
+F
+1
+1
+F
+0
+H
+0
+1
+F
+1
+0
+F
+F
+H
+F
+F
+F
+F
+1
+F
+F
+0
+H
+H
+F
+F
+H
+H
+0
+H
+F
+1
+1
+F
+0
+H
+0
+1
+F
+1
+0
+F
+F
+H
+F
+F
+F
+F
+1
+F
+F</span></div>
+<div class="wrap">
+<div class="logo">&gt;штаб_<span class="cur">█</span><div class="crownbtn tab" data-t="admin"><svg class="i" viewBox="0 0 24 24"><use href="#ic-crown"/></svg></div></div>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f9e4f"/><stop offset="1" stop-color="#6ee87d"/></linearGradient>
+<g id="ic-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></g>
+<g id="ic-cup"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></g>
+<g id="ic-medal"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></g>
+<g id="ic-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></g>
+<g id="ic-crown"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></g>
+<g id="ic-gift"><path d="M4 12v8h16v-8M2.5 7.5h19V12h-19zM12 7.5V20"/><path d="M12 7.5C9.5 3 4.5 4.5 6 7.5M12 7.5c2.5-4.5 7.5-3 6 0"/></g>
+<g id="ic-dice"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M16 8h.01"/><path d="M8 8h.01"/><path d="M8 16h.01"/><path d="M16 16h.01"/><path d="M12 12h.01"/></g>
+<g id="ic-hands"><circle cx="8" cy="7" r="3"/><circle cx="16.5" cy="8.5" r="2.4"/><path d="M3.5 20c0-3 2-5 4.5-5s4.5 2 4.5 5M13.5 19c.3-2.4 1.6-3.9 3-3.9 1.9 0 3.4 1.7 3.4 4"/></g>
+<g id="ic-flame"><path d="M12 3s5.5 5.2 5.5 9.5a5.5 5.5 0 0 1-11 0C6.5 8.2 12 3 12 3z"/><path d="M12 21a3 3 0 0 1-3-3c0-2 3-4.5 3-4.5s3 2.5 3 4.5a3 3 0 0 1-3 3z"/></g>
+<g id="ic-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></g>
+<g id="ic-mega"><path d="M3 11v3l4 1 11 5V4L7 9H4a1 1 0 0 0-1 1z"/><path d="M8 15.5V19a1.5 1.5 0 0 0 3 0"/></g>
+<g id="ic-vote"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.5 2.5 5-5"/></g>
+<g id="ic-bell"><path d="M18 9a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 15 18 9"/><path d="M10 20a2 2 0 0 0 4 0"/></g>
+<g id="ic-moon"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a7 7 0 0 0 9.7 9.7z"/></g>
+<g id="ic-ghost"><path d="M5.5 21V10a6.5 6.5 0 0 1 13 0v11l-2.2-1.8-2.1 1.8-2.2-1.8-2.2 1.8-2.1-1.8z"/><circle cx="9.7" cy="10" r=".7" fill="currentColor"/><circle cx="14.3" cy="10" r=".7" fill="currentColor"/></g>
+<g id="ic-heart"><path d="M12 20.5S4.5 16 4.5 10.3A4.2 4.2 0 0 1 12 7.7a4.2 4.2 0 0 1 7.5 2.6C19.5 16 12 20.5 12 20.5z"/></g>
+<g id="ic-target"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.8"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g>
+<g id="ic-mask"><path d="M4 5c2.5 1.2 13.5 1.2 16 0v7.5A8.3 8.3 0 0 1 12 21a8.3 8.3 0 0 1-8-8.5z"/><path d="M8 11c.7-.8 2-.8 2.7 0M13.3 11c.7-.8 2-.8 2.7 0M9 15.5c1.8 1.4 4.2 1.4 6 0"/></g>
+<g id="ic-spark"><path d="M12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21M5.8 5.8l2.4 2.4M15.8 15.8l2.4 2.4M18.2 5.8l-2.4 2.4M8.2 15.8l-2.4 2.4"/></g>
+</defs></svg>
+
+<section id="main" class="on">
+  <div class="card hero">
+    <div class="hero-title"><span class="pill"><span class="dot"></span>В СЕТИ</span><span class="t">Frag Hug · сезон осень</span><span class="mode" id="mode">ДЕМО</span></div>
+    <div class="ring">
+      <svg class="r" width="206" height="206" viewBox="0 0 206 206">
+        <circle cx="103" cy="103" r="90" fill="none" stroke="#132238" stroke-width="14"/>
+        <circle cx="103" cy="103" r="90" fill="none" stroke="url(#g)" stroke-width="14" stroke-linecap="round"
+          stroke-dasharray="413 566"/>
+      </svg>
+      <div class="num"><b id="big">7319</b><span>СООБЩЕНИЙ<br>ЗА 7 ДНЕЙ</span></div>
+    </div>
+    <div class="sub">нас в клане <b>66 человек</b><small>цифры обновляются каждое утро в 09:00</small></div>
+    <div class="hr"></div>
+    <div class="rowline"><span>ЦЕЛЬ НЕДЕЛИ</span><b>7 319 / 10 000</b></div>
+    <div class="bar"><i style="width:73%"></i></div>
+    <div class="rowline" style="margin-bottom:10px">БЫСТРЫЕ ДЕЙСТВИЯ</div>
+    <div class="btnrow">
+      <div class="btn" onclick="go(BOT+'?start=daily')">🎁 БОНУС ДНЯ</div>
+      <div class="btn" onclick="showTab('games')">🎮 ИГРЫ</div>
+    </div>
+    <div class="btnrow" style="margin-bottom:2px">
+      <div class="btn dim" onclick="go(CHAT)">🤝 ЖЕСТЫ · В ЧАТЕ</div>
+      <div class="btn dim" onclick="openRoast()">😈 ПОДКОЛОТЬ</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span style="display:flex;align-items:center;gap:9px">📰 Газета</span><span class="pill">СЕГОДНЯ 09:00</span></h2>
+    <div class="rowline" style="margin-bottom:10px"><span>ВЧЕРА В ЧАТЕ</span><b>1 299 сообщ. · 26 чел.</b></div>
+    <div class="trow" style="padding:8px 0"><div class="place g">1</div><div class="tinfo"><div class="tname">👾 Nik 👾</div></div><div class="tval">294</div></div>
+    <div class="trow" style="padding:8px 0"><div class="place s">2</div><div class="tinfo"><div class="tname">👑 🎰 Настя 💖</div></div><div class="tval">276</div></div>
+    <div class="trow" style="padding:8px 0"><div class="place b">3</div><div class="tinfo"><div class="tname">Даня</div></div><div class="tval">234</div></div>
+    <div class="hr" style="margin:12px 0"></div>
+    <div class="sds" style="font-size:12px;line-height:1.6">🎯 <b>Мишень дня:</b> Даня — «Твой прицел гуляет, как ты в пятницу»<br>
+    💘 <b>Парочка дня:</b> БОБО + Hanna — свело газетой до полуночи<br>
+    🏅 <b>Новые значки:</b> 🎯 Снайпер — Браун · 📸 Папарацци — Лис<br>
+    🌙 <b>Вечером в 20:30</b> — вопрос вечера</div>
+  </div>
+  <div class="card">
+    <h2><span style="display:flex;align-items:center;gap:9px">🎯 Кастомка 05.09</span><span class="pill">СБОР 18:40</span></h2>
+    <div class="rowline" style="margin-bottom:12px"><span>КБ ОТ ПЕРВОГО ЛИЦА · 4 ИГРЫ</span></div>
+    <div class="rowline"><span>ИДУТ</span><b class="up">3</b></div>
+    <div class="tbar"><i style="width:23%"></i></div>
+    <div class="rowline" style="margin-top:9px"><span>МИМО</span><b class="down">10</b></div>
+    <div class="tbar"><i style="width:77%;background:var(--red)"></i></div>
+    <div class="cta" style="margin:12px 0 0;padding:12px" onclick="go('https://t.me/c/2688020347/21085')">ГОЛОСОВАТЬ В ТЕМЕ</div>
+    <div class="note" style="margin-top:8px;margin-bottom:0">закроется в субботу в 12:00</div>
+  </div>
+  <div class="card" style="padding:14px 18px">
+    <div class="rowline"><span>СКОРО В ПРИЛОЖЕНИИ</span><span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">В РАЗРАБОТКЕ</span></div>
+    <div class="sds" style="margin-top:8px;font-size:12px">🎮 дуэли 1 на 1 · 🧠 квиз по CODM · 🎡 колесо фортуны — на фраги, с таблицей рекордов</div>
+  </div>
+  <div class="cta" onclick="go(CHAT)"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>ОТКРЫТЬ ЧАТ КЛАНА</div>
+  <div class="note">завтра в 12:00 — коронация Легенды августа</div>
+</section>
+
+
+<section id="games">
+  <h2>Игры в приложении <span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">ТЕСТ</span></h2>
+  <div id="invites"></div>
+  <div class="testbar"><span>ТЕСТОВЫЙ БАЛАНС · фраги не настоящие до переезда</span><b id="tf">100</b></div>
+  <div class="grid">
+    <div class="gcard play" style="--a:#e87d7d;grid-column:1/-1" onclick="openCall()"><div class="em">👥</div><div class="nm">Позвать в игру</div><div class="hint">кубик · рулетка · камень-ножницы — с кем угодно из клана, победитель забирает ставки всех</div><div class="cnt">позвать →</div></div>
+    <div class="gcard play" style="--a:#f5c84b" onclick="openWheel()"><div class="em">🎡</div><div class="nm">Колесо фортуны</div><div class="hint">ставка 10, до ×20</div><div class="cnt">играть →</div></div>
+    <div class="gcard play" style="--a:#c08cff" onclick="openSlot()"><div class="em">🎰</div><div class="nm">Слот</div><div class="hint">7-7-7 ×10 · три в ряд ×3 · пара ×1.2</div><div class="cnt">играть →</div></div>
+    <div class="gcard play" style="--a:#e87d7d" onclick="openMines()"><div class="em">💣</div><div class="nm">Минное поле</div><div class="hint">5 мин на 25 клеток, забирай вовремя</div><div class="cnt">играть →</div></div>
+    <div class="gcard play" style="--a:#f5c84b" onclick="openBj()"><div class="em">🃏</div><div class="nm">Очко</div><div class="hint">против Штаба, дилер до 17</div><div class="cnt">играть →</div></div>
+    <div class="gcard play" style="--a:#6fb7ff" onclick="openCoin()"><div class="em">🪙</div><div class="nm">Удвоение</div><div class="hint">орёл или решка — удвой или забери</div><div class="cnt">играть →</div></div>
+    <div class="gcard play" style="--a:#4fd97a" onclick="openDice()"><div class="em">🎲</div><div class="nm">Кубик</div><div class="hint">против Штаба, у кого больше</div><div class="cnt">играть →</div></div>
+    <div class="gcard play" style="--a:#4fd97a" onclick="openRps()"><div class="em">✊</div><div class="nm">Против Штаба</div><div class="hint">камень-ножницы, ставка 10</div><div class="cnt">играть →</div></div>
+    
+  </div>
+<h2 style="margin-top:16px">Игры в чате <span class="balance">ОТКРЫВАЮТСЯ В ТЕМЕ</span></h2>
+  <div class="grid">
+    <div class="gcard" style="--a:#4fd97a" onclick="go(GAMES_TOPIC)"><div class="em">🎲</div><div class="nm">Дуэль</div><div class="hint">кубик — у кого больше</div><div class="cnt">133 партии за неделю</div></div>
+    <div class="gcard" style="--a:#e87d7d" onclick="go(GAMES_TOPIC)"><div class="em">🔫</div><div class="nm">Рулетка</div><div class="hint">2–8 игроков, последний живой</div><div class="cnt">хит недели · 85 партий</div></div>
+    <div class="gcard" style="--a:#f5c84b" onclick="go(GAMES_TOPIC)"><div class="em">🃏</div><div class="nm">Очко</div><div class="hint">против Штаба или 1 на 1</div><div class="cnt">11 партий</div></div>
+    <div class="gcard" style="--a:#c08cff" onclick="go(GAMES_TOPIC)"><div class="em">🎰</div><div class="nm">Слот</div><div class="hint">7-7-7 ×10, ставки до 200</div><div class="cnt">57 прокруток</div></div>
+    <div class="gcard" style="--a:#6fb7ff" onclick="go(GAMES_TOPIC)"><div class="em">✊</div><div class="nm">Камень-ножницы</div><div class="hint">выбор скрыт до конца</div><div class="cnt">38 партий</div></div>
+    <div class="gcard" style="--a:#ff9f6e" onclick="go(GAMES_TOPIC)"><div class="em">🎯</div><div class="nm">Тир и спорт</div><div class="hint">дартс · баскет · футбол · боулинг</div><div class="cnt">135 партий</div></div>
+    <div class="gcard" style="--a:#4fd97a" onclick="go(GAMES_TOPIC)"><div class="em">🎭</div><div class="nm">Кто я сегодня</div><div class="hint">роль на день, перебросить — 100 фр</div><div class="cnt">каждый день новая</div></div>
+    <div class="gcard" style="--a:#e87d7d" onclick="go(GAMES_TOPIC)"><div class="em">😈</div><div class="nm">Подколоть</div><div class="hint">686 подначек в пуле</div><div class="cnt">ответом на сообщение</div></div>
+  </div>
+  </section>
+
+<section id="tops">
+  <h2>Топ недели <span class="balance">7 ДНЕЙ</span></h2>
+  <div class="card">
+    <div class="trow"><div class="place g">1</div>
+      <div class="tinfo"><div class="tname">👑 🎰 Настя 💖</div><div class="tbar"><i style="width:100%"></i></div></div>
+      <div class="tval">1 359<small class="down">↓683</small></div></div>
+    <div class="trow"><div class="place s">2</div>
+      <div class="tinfo"><div class="tname">👾 Nik 👾</div><div class="tbar"><i style="width:64%"></i></div></div>
+      <div class="tval">876<small class="down">↓207</small></div></div>
+    <div class="trow"><div class="place b">3</div>
+      <div class="tinfo"><div class="tname">БОБО</div><div class="tbar"><i style="width:51%"></i></div></div>
+      <div class="tval">698<small class="up">↑281</small></div></div>
+    <div class="trow"><div class="place">4</div>
+      <div class="tinfo"><div class="tname">Hanna</div><div class="tbar"><i style="width:48%"></i></div></div>
+      <div class="tval">652<small class="up">↑163</small></div></div>
+    <div class="trow"><div class="place">5</div>
+      <div class="tinfo"><div class="tname">Даня</div><div class="tbar"><i style="width:47%"></i></div></div>
+      <div class="tval">647<small class="up">↑207</small></div></div>
+  </div>
+
+  <h2>Рейтинг игр</h2>
+  <div class="card">
+    <div class="trow"><div class="place g">1</div>
+      <div class="tinfo"><div class="tname">Браун 𓆩🖤𓆪</div><div class="tbar"><i style="width:100%"></i></div></div>
+      <div class="tval">90<small>побед · 39%</small></div></div>
+    <div class="trow"><div class="place s">2</div>
+      <div class="tinfo"><div class="tname">👑 🎰 Настя 💖</div><div class="tbar"><i style="width:47%"></i></div></div>
+      <div class="tval">42<small>победы · 41%</small></div></div>
+    <div class="trow"><div class="place b">3</div>
+      <div class="tinfo"><div class="tname">Алеся🦊</div><div class="tbar"><i style="width:11%"></i></div></div>
+      <div class="tval">10<small>побед · 37%</small></div></div>
+  </div>
+
+  <h2>Пары клана</h2>
+  <div class="wolf"><svg class="i cr" viewBox="0 0 24 24"><use href="#ic-crown"/></svg>
+    <span><b>Nik</b> — сердце всегда открыто, но этот волк ходит один</span></div>
+  <div class="card">
+    <div class="couple"><span class="nm">👑 🎰 Настя 💖</span><span class="heart">❤️</span><span class="nm">Браун 𓆩🖤𓆪</span><span class="days">9 дн.</span></div>
+    <div class="couple"><span class="nm">𝑵𝒀𝑼𝑺𝑯𝑨</span><span class="heart">❤️</span><span class="nm">Юлия 🫦</span><span class="days">6 дн.</span></div>
+    <div class="couple"><span class="nm">Алеся🦊</span><span class="heart">❤️</span><span class="nm">Hanna</span><span class="days">6 дн.</span></div>
+    <div class="couple"><span class="nm">Даня</span><span class="heart">❤️</span><span class="nm">𝔇𝔞𝔰𝔥𝔲𝔩𝔶𝔞⋆｡˚✹˚｡</span><span class="days">2 дн.</span></div>
+  </div>
+</section>
+
+<section id="profile">
+  <div id="pcard"></div>
+  <h2>Звания <span class="balance">ПО СООБЩЕНИЯМ</span></h2>
+  <div class="wolf" style="border-color:#6b5a2f99"><span style="font-size:20px">👑</span>
+    <span><b>✦ ᴨᴀᴨᴏчᴋᴀ ✦</b> · Краш клана — только у владельца</span></div>
+  <div class="card">
+    <div class="trow"><div class="place g">♛</div>
+      <div class="tinfo"><div class="tname"><b>Легенда клана</b> · от 3000</div>
+      <div class="tbar"><i style="width:100%"></i></div></div>
+      <div class="tval" style="font-weight:400;font-size:12px">🎰 Настя</div></div>
+    <div class="trow"><div class="place s">♜</div>
+      <div class="tinfo"><div class="tname"><b>Легенда</b> · от 1500</div>
+      <div class="tbar"><i style="width:72%"></i></div></div>
+      <div class="tval" style="font-weight:400;font-size:12px">👾 Nik</div></div>
+    <div class="trow"><div class="place b">♞</div>
+      <div class="tinfo"><div class="tname"><b>Элита</b> · от 500</div>
+      <div class="tbar"><i style="width:44%"></i></div></div>
+      <div class="tval" style="font-weight:400;font-size:12px">7 человек</div></div>
+    <div class="trow"><div class="place">·</div>
+      <div class="tinfo"><div class="tname">Опора клана · от 200</div>
+      <div class="tbar"><i style="width:30%"></i></div></div>
+      <div class="tval" style="font-weight:400;font-size:12px">7 человек</div></div>
+    <div class="trow"><div class="place">·</div>
+      <div class="tinfo"><div class="tname">Свой человек · от 50</div>
+      <div class="tbar"><i style="width:18%"></i></div></div>
+      <div class="tval" style="font-weight:400;font-size:12px">6 человек</div></div>
+    <div class="trow"><div class="place">·</div>
+      <div class="tinfo"><div class="tname">Новичок · старт</div>
+      <div class="tbar"><i style="width:8%"></i></div></div>
+      <div class="tval" style="font-weight:400;font-size:12px">44 человек</div></div>
+  </div>
+  <div class="note">впереди ещё: Икона чата · Достояние Frag Hug · Вне категорий</div>
+  <h2>Значки <span class="balance">23 ИЗ 25 РАЗОБРАНЫ</span></h2>
+  <div class="grid">
+    <div class="bcard"><div class="em">💯</div><div class="nm">Сотня</div>
+      <div class="hint">100 сообщений</div><div class="cnt">у 25 человек</div></div>
+    <div class="bcard"><div class="em">🔥</div><div class="nm">Пятихатка</div>
+      <div class="hint">500 сообщений</div><div class="cnt">у 10 человек</div></div>
+    <div class="bcard"><div class="em">👑</div><div class="nm">Тысячник</div>
+      <div class="hint">1000 сообщений</div><div class="cnt">у 6 человек</div></div>
+    <div class="bcard"><div class="em">🚀</div><div class="nm">Двухтысячник</div>
+      <div class="hint">2000 сообщений</div><div class="cnt">у 1 человек</div></div>
+    <div class="bcard free"><div class="em">☄️</div><div class="nm">Пятитысячник</div>
+      <div class="hint">5000 сообщений</div><div class="cnt">ничей — стань первым</div></div>
+    <div class="bcard"><div class="em">🦉</div><div class="nm">Ночной дозор</div>
+      <div class="hint">20 сообщений после полуночи</div><div class="cnt">у 15 человек</div></div>
+    <div class="bcard"><div class="em">🎙</div><div class="nm">Голос</div>
+      <div class="hint">20 голосовых</div><div class="cnt">у 10 человек</div></div>
+    <div class="bcard"><div class="em">😜</div><div class="nm">Стикер-лорд</div>
+      <div class="hint">50 стикеров</div><div class="cnt">у 7 человек</div></div>
+    <div class="bcard"><div class="em">📅</div><div class="nm">Без пропусков</div>
+      <div class="hint">писать 7 дней подряд</div><div class="cnt">у 21 человек</div></div>
+    <div class="bcard"><div class="em">🌅</div><div class="nm">Жаворонок</div>
+      <div class="hint">20 сообщений с 6 до 9 утра</div><div class="cnt">у 14 человек</div></div>
+    <div class="bcard"><div class="em">📸</div><div class="nm">Папарацци</div>
+      <div class="hint">100 фото и видео</div><div class="cnt">у 2 человек</div></div>
+    <div class="bcard free"><div class="em">🗓</div><div class="nm">Марафонец</div>
+      <div class="hint">30 дней в чате</div><div class="cnt">ничей — стань первым</div></div>
+    <div class="bcard"><div class="em">🎤</div><div class="nm">Радиоведущий</div>
+      <div class="hint">100 голосовых</div><div class="cnt">у 3 человек</div></div>
+    <div class="bcard"><div class="em">🎪</div><div class="nm">Стикер-магнат</div>
+      <div class="hint">200 стикеров</div><div class="cnt">у 2 человек</div></div>
+    <div class="bcard"><div class="em">🩸</div><div class="nm">Первая кровь</div>
+      <div class="hint">победить человека в дуэли</div><div class="cnt">у 28 человек</div></div>
+    <div class="bcard"><div class="em">⚔️</div><div class="nm">Дуэлянт</div>
+      <div class="hint">5 побед над людьми</div><div class="cnt">у 16 человек</div></div>
+    <div class="bcard"><div class="em">🤖</div><div class="nm">Гроза Штаба</div>
+      <div class="hint">3 победы над ботом</div><div class="cnt">у 6 человек</div></div>
+    <div class="bcard"><div class="em">🔫</div><div class="nm">Фартовый</div>
+      <div class="hint">5 побед в рулетке</div><div class="cnt">у 6 человек</div></div>
+    <div class="bcard"><div class="em">✊</div><div class="nm">Психолог</div>
+      <div class="hint">5 побед в камень-ножницы</div><div class="cnt">у 5 человек</div></div>
+    <div class="bcard"><div class="em">🃏</div><div class="nm">Крупье</div>
+      <div class="hint">3 победы в очко</div><div class="cnt">у 4 человек</div></div>
+    <div class="bcard"><div class="em">🎯</div><div class="nm">Снайпер</div>
+      <div class="hint">10 побед в стрельбе</div><div class="cnt">у 1 человек</div></div>
+    <div class="bcard"><div class="em">⚽</div><div class="nm">Бомбардир</div>
+      <div class="hint">10 побед в футболе</div><div class="cnt">у 1 человек</div></div>
+    <div class="bcard"><div class="em">🏆</div><div class="nm">Чемпион</div>
+      <div class="hint">50 побед в играх</div><div class="cnt">у 4 человек</div></div>
+    <div class="bcard"><div class="em">💰</div><div class="nm">Кубышка</div>
+      <div class="hint">накопить 1000 фрагов</div><div class="cnt">у 9 человек</div></div>
+    <div class="bcard"><div class="em">💍</div><div class="nm">Окольцован</div>
+      <div class="hint">быть в браке</div><div class="cnt">у 8 человек</div></div>
+  </div>
+</section>
+
+<section id="shop">
+  <h2>Лавка <span class="balance"><span class="tfv">100</span> ФР</span></h2>
+  <div class="result" id="shopres" style="min-height:0;margin:0 0 10px"></div>
+  <div class="note" style="text-align:left;margin:0 2px 12px">Фраги — за сообщения, победы и значки.<br>Тратятся только здесь, передать нельзя.</div>
+  <div class="srow" onclick="buy('reroll')"><div class="sic">🎭</div>
+    <div class="sinfo"><div class="snm">Новая роль</div><div class="sds">перебросить «кто я сегодня»</div></div>
+    <div class="spr"><b>100</b><small>фрагов</small></div></div>
+  <div class="srow hit" onclick="buy('boost')"><div class="sic">🎲</div>
+    <div class="sinfo"><div class="snm">Крупная игра<span class="tag">ХИТ</span></div>
+    <div class="sds">до полуночи ставки до 500, потолок 1500</div></div>
+    <div class="spr"><b>150</b><small>фрагов</small></div></div>
+  <div class="srow" onclick="pickPerson('Кого подколоть за 300?', id=>buy('roast',{target:id}))"><div class="sic">😈</div>
+    <div class="sinfo"><div class="snm">Заказная подначка</div><div class="sds">бот подколет любого от вашего имени</div></div>
+    <div class="spr"><b>300</b><small>фрагов</small></div></div>
+  <div class="srow" onclick="openMark()"><div class="sic">✨</div>
+    <div class="sinfo"><div class="snm">Знак у имени</div><div class="sds">личный символ рядом с именем · 7 дней</div></div>
+    <div class="spr"><b>800</b><small>фрагов</small></div></div>
+</section>
+
+<section id="admin">
+  <h2>Кабинет <span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">ВЛАДЕЛЕЦ</span></h2>
+  <div class="srow" onclick="go(BOT+'?start=announce')"><div class="sic">📢</div>
+    <div class="sinfo"><div class="snm">От имени Штаба</div><div class="sds">объявление в любую тему</div></div>
+    <div class="go">›</div></div>
+  <div class="srow" onclick="go(BOT+'?start=vote')"><div class="sic">🗳</div>
+    <div class="sinfo"><div class="snm">Голосование</div><div class="sds">кастомки, споры, что угодно</div></div>
+    <div class="go">›</div></div>
+  <div class="srow" onclick="go(BOT+'?start=muster')"><div class="sic">📣</div>
+    <div class="sinfo"><div class="snm">Созыв</div><div class="sds">за час бот сам дожмёт молчунов</div></div>
+    <div class="go">›</div></div>
+  <div class="srow" onclick="go(BOT+'?start=quiet')"><div class="sic">🤫</div>
+    <div class="sinfo"><div class="snm">Тихий час</div><div class="sds">включить или выключить — в личке бота</div></div>
+    <div class="go">›</div></div>
+  <div class="srow" onclick="go(BOT+'?start=roster')"><div class="sic">👥</div>
+    <div class="sinfo"><div class="snm">Движение состава</div>
+    <div class="sds">за неделю: <b class="up">+14 пришли</b> · <b class="down">−7 вышли</b> · в клане 66</div></div>
+    <div class="go">›</div></div>
+  <div class="srow" onclick="go(BOT+'?start=inactive')"><div class="sic">🪦</div>
+    <div class="sinfo"><div class="snm">Неактивные</div><div class="sds">радар молчунов за 14 дней</div></div>
+    <div class="go">›</div></div>
+</section>
+</div>
+
+
+<div class="overlay" id="ov-wheel"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🎡 Колесо фортуны</h2><span class="balance" id="tf2">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="wheelwrap"><div class="pin"></div><div class="wheel" id="wheel"><div class="wlab" id="wlab"></div></div></div>
+  <div class="result" id="wres">Ставка 10 фрагов. Крути — сектор решает.</div>
+  <div class="cta" onclick="spin()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>КРУТИТЬ ЗА 10</div>
+</div></div>
+
+  <div class="result" id="qres"></div>
+</div></div>
+
+
+<div class="overlay" id="ov-slot"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🎰 Слот</h2><span class="balance" id="tf4">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard"><div class="reels"><div class="reel" id="r0">7️⃣</div><div class="reel" id="r1">🍇</div><div class="reel" id="r2">🍋</div></div>
+    <div class="result" id="sres">Ставка 10. 7-7-7 — ×10, три в ряд — ×3, пара — ×1.2.</div>
+    <div class="cta" onclick="slot()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>КРУТИТЬ ЗА 10</div></div>
+</div></div>
+
+<div class="overlay" id="ov-mines"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>💣 Минное поле</h2><span class="balance" id="tf5">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard"><div class="mult"><span>ОТКРЫТО <b id="mopen" style="font-size:13px;color:var(--txt)">0</b></span><span>МНОЖИТЕЛЬ <b id="mmult">×1.0</b></span><span>ЗАБРАТЬ <b id="mwin">10</b></span></div>
+    <div class="mines" id="mgrid"></div>
+    <div class="result" id="mres">Ставка 10. Под пятью клетками мины. Каждая безопасная — множитель растёт.</div>
+    <div class="btn2"><div class="cta" id="mstart" onclick="minesStart()">НАЧАТЬ ЗА 10</div><div class="cta ghost" onclick="minesCash()">ЗАБРАТЬ</div></div></div>
+</div></div>
+
+<div class="overlay" id="ov-bj"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🃏 Очко</h2><span class="balance" id="tf6">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard"><div class="hlabel"><span>ШТАБ</span><b id="bdsum">—</b></div><div class="hand" id="bdealer"></div>
+    <div class="hlabel"><span>ВЫ</span><b id="bmsum">—</b></div><div class="hand" id="bme"></div>
+    <div class="result" id="bres">Ставка 10. Ближе к 21 — забираете 20, перебор — ноль.</div>
+    <div class="btn2" id="bjbtns"><div class="cta" onclick="bjStart()">СДАТЬ ЗА 10</div></div></div>
+</div></div>
+
+<div class="overlay" id="ov-coin"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🪙 Удвоение</h2><span class="balance" id="tf7">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard"><div class="coin" id="coin">🪙</div><div class="pot">НА КОНУ<b id="cpot">10</b></div>
+    <div class="result" id="cres">Угадал сторону — банк удваивается. Дальше решай: ещё раз или забрать.</div>
+    <div class="btn2" id="cbtns"><div class="cta" onclick="coinFlip(0)">🦅 ОРЁЛ</div><div class="cta" onclick="coinFlip(1)">🔢 РЕШКА</div></div></div>
+</div></div>
+
+<div class="overlay" id="ov-dice"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🎲 Кубик</h2><span class="balance" id="tf8">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard"><div class="dicebox"><div><span id="dme">⚄</span><small>ВЫ</small></div><div style="font-size:16px;color:var(--mut)">VS</div><div><span id="dbot">⚂</span><small>ШТАБ</small></div></div>
+    <div class="result" id="dres">Ставка 10. У кого больше — тот забирает 20. Ничья — возврат.</div>
+    <div class="cta" onclick="dice()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>БРОСИТЬ ЗА 10</div></div>
+</div></div>
+
+<div class="overlay" id="ov-pick"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2 id="pick-title">Кого?</h2></div>
+  <div class="qcard"><input id="pick-q" placeholder="Начни писать имя…" oninput="pickFilter()"
+    style="width:100%;box-sizing:border-box;background:#0f1b2e;border:1px solid var(--line2);color:var(--txt);border-radius:12px;padding:12px 14px;font:inherit;font-size:14px;margin-bottom:10px">
+    <div id="pick-list"></div></div>
+</div></div>
+
+<div class="overlay" id="ov-mark"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>✨ Знак у имени</h2><span class="balance tfv">100</span></div>
+  <div class="qcard"><div class="result">Символ рядом с именем везде на 7 дней. Выберите свой:</div>
+    <div class="grid" id="marks" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="result" id="markres"></div></div>
+</div></div>
+
+<div class="overlay" id="ov-roast"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>😈 Подколоть</h2></div>
+  <div class="qcard"><div class="result" id="roastres">Бот подколет любого от вашего имени в Основном чате — подначка из пула клана, бесплатно, раз в полминуты.</div>
+    <div class="cta" onclick="pickPerson('Кого подколоть?', roastGo)">ВЫБРАТЬ ЖЕРТВУ</div></div>
+</div></div>
+
+<div class="overlay" id="ov-call"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>👥 Позвать в игру</h2><span class="balance tfv">100</span></div>
+  <div class="qcard">
+    <div class="rowline" style="margin-bottom:8px">1 · ИГРА</div>
+    <div class="btn2" id="call-games"></div>
+    <div class="rowline" style="margin:14px 0 8px">2 · КОГО ЗОВЁМ <span id="call-count" style="color:var(--green)">никого</span></div>
+    <input id="call-q" placeholder="Начни писать имя…" oninput="callFilter()"
+      style="width:100%;box-sizing:border-box;background:#0f1b2e;border:1px solid var(--line2);color:var(--txt);border-radius:12px;padding:11px 14px;font:inherit;font-size:14px;margin-bottom:8px">
+    <div id="call-list" style="max-height:220px;overflow:auto"></div>
+    <div class="rowline" style="margin:14px 0 8px">3 · СТАВКА КАЖДОГО</div>
+    <div class="stakes" data-stakes></div>
+    <div class="result" id="callres" style="min-height:0"></div>
+    <div class="cta" onclick="callGo()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>ПОЗВАТЬ</div>
+  </div>
+</div></div>
+
+<div class="overlay" id="ov-lobby"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2 id="lb-title">Игра</h2><span class="balance tfv">100</span></div>
+  <div class="qcard">
+    <div class="rowline" style="margin-bottom:10px"><span id="lb-sub"></span><b id="lb-stake"></b></div>
+    <div id="lb-people"></div>
+    <div class="result" id="lb-res" style="margin-top:12px"></div>
+    <div id="lb-actions" class="btn2"></div>
+  </div>
+</div></div>
+
+<div class="overlay" id="ov-duel"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>⚔️ Дуэль 1 на 1</h2><span class="balance tfv">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard"><div class="result" id="dures">Кинь вызов — его увидит весь клан в этом окне. Кто примет, тот и соперник: два кубика, у кого больше — забирает ставку.</div>
+    <div class="btn2"><div class="cta" onclick="duelCreate()">ВЫЗОВ ВСЕМ</div><div class="cta ghost" onclick="pickPerson('Кого вызвать?', id=>duelCreate(id))">ВЫЗВАТЬ ПО ИМЕНИ</div></div>
+    <div class="note" style="margin-top:10px">адресный вызов: человека упомянет бот в теме игр, принять сможет только он</div></div>
+  <h2>Открытые вызовы</h2>
+  <div class="qcard" id="duopen"><div class="note">пока никого — будь первым</div></div>
+  <h2>Мои последние</h2>
+  <div class="qcard" id="dumine"><div class="note">ещё не дрался</div></div>
+</div></div>
+
+<div class="overlay" id="ov-rps"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>✊ Против Штаба</h2><span class="balance" id="tf3">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard">
+    <div class="duel"><div><span id="rme">❔</span><small>ВЫ</small></div><div style="font-size:16px;color:var(--mut)">VS</div><div><span id="rbot">🤖</span><small>ШТАБ</small></div></div>
+    <div class="result" id="rres">Ставка 10. Выбирайте — Штаб уже выбрал.</div>
+    <div class="rps"><button onclick="rps(0)">✊</button><button onclick="rps(1)">✌️</button><button onclick="rps(2)">✋</button></div>
+  </div>
+</div></div>
+
+<div class="tabs"><div class="tabbar">
+  <div class="tab" data-t="games"><svg class="i" viewBox="0 0 24 24"><use href="#ic-dice"/></svg>ИГРЫ</div>
+  <div class="tab" data-t="main"><svg class="i" viewBox="0 0 24 24"><use href="#ic-home"/></svg>ГЛАВНАЯ</div>
+  <div class="tab" data-t="tops"><svg class="i" viewBox="0 0 24 24"><use href="#ic-cup"/></svg>ТОПЫ</div>
+  <div class="tab" data-t="profile"><svg class="i" viewBox="0 0 24 24"><use href="#ic-medal"/></svg>ПРОФИЛЬ</div>
+  <div class="tab" data-t="shop"><svg class="i" viewBox="0 0 24 24"><use href="#ic-bag"/></svg>ЛАВКА</div>
+</div></div>
+<script>
+try{Telegram.WebApp.ready();Telegram.WebApp.expand();Telegram.WebApp.setHeaderColor("#0a1322");Telegram.WebApp.setBackgroundColor("#0a1322");}catch(e){}
+function showTab(id){document.querySelectorAll(".tabbar .tab").forEach(x=>x.classList.toggle("on",x.dataset.t===id));
+  document.querySelectorAll("section").forEach(x=>x.classList.toggle("on",x.id===id));window.scrollTo(0,0);}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showTab(t.dataset.t));
+showTab("games");
+
+// ---- links ----
+const CHAT="https://t.me/c/2688020347/1", GAMES_TOPIC="https://t.me/c/2688020347/76487", BOT="https://t.me/FH_shtab_bot";
+function go(url){try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.openTelegramLink){Telegram.WebApp.openTelegramLink(url);return;}}catch(e){}window.open(url,"_blank");}
+
+// ---- live or demo ----
+const API="https://80-253-251-44.sslip.io";
+const INIT=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)||"";
+let LIVE=false;
+async function api(path,body){const r=await fetch(API+path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json","X-Init-Data":INIT},body:body?JSON.stringify(body):undefined});
+  const d=await r.json().catch(()=>({error:"Сервер молчит"}));if(!r.ok)throw new Error(d.error||("HTTP "+r.status));return d;}
+function esc(t){return String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+
+// ---- wallet (demo: local; live: what the server says) ----
+let tfTotal=0, balance=100;
+const TF={get(){return balance},set(v){const d=v-balance;if(d)tfTotal+=d;balance=v;paint(d);}};
+function paint(d){document.querySelectorAll("#tf,.tfv").forEach(el=>el.textContent=balance);
+  document.querySelectorAll(".tfd").forEach(el=>{el.textContent=d?(d>0?"+"+d:""+d):"—";el.style.color=d>0?"var(--green)":d<0?"var(--red)":"var(--mut)";});
+  document.querySelectorAll(".tft").forEach(el=>{el.textContent=(tfTotal>0?"+":"")+tfTotal;el.style.color=tfTotal>0?"var(--green)":tfTotal<0?"var(--red)":"var(--mut)";});}
+function settle(frags){if(typeof frags==="number")TF.set(frags);}
+let stake=10;
+document.querySelectorAll("[data-stakes]").forEach(box=>{[10,25,50,100].forEach(v=>{const sp=document.createElement("span");sp.textContent=v;sp.className=v===stake?"on":"";
+  sp.onclick=()=>{stake=v;document.querySelectorAll("[data-stakes] span").forEach(x=>x.classList.toggle("on",+x.textContent===v));};box.appendChild(sp);});});
+function fail(id,e){document.getElementById(id).innerHTML="<b style='color:var(--red)'>"+esc(e.message||e)+"</b>";}
+function openOv(id){document.getElementById(id).classList.add("on");window.scrollTo(0,0)}
+function closeOv(){document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("on"));clearInterval(duelTimer);}
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+// ---- home & profile from the server ----
+function nameRow(place,cls,name,val,sub){return `<div class="trow"><div class="place ${cls}">${place}</div><div class="tinfo"><div class="tname">${esc(name)}</div></div><div class="tval">${val}${sub?`<small>${sub}</small>`:""}</div></div>`}
+async function loadLive(){
+  const [home,me]=await Promise.all([api("/api/home"),api("/api/me")]);
+  LIVE=true;myId=me.id;document.getElementById("mode").textContent="LIVE";document.getElementById("mode").classList.add("live");
+  document.querySelector(".testbar").innerHTML="<span>НАСТОЯЩИЕ ФРАГИ · общий кошелёк с чатом</span><b class=\"tfv\">"+me.frags+"</b>";
+  balance=me.frags;tfTotal=0;paint(0);
+  document.getElementById("big").textContent=home.week_messages.toLocaleString("ru-RU");fitBig();
+  document.querySelector(".sub").innerHTML=`нас в клане <b>${home.members} человек</b><small>цифры живые — прямо из базы Штаба</small>`;
+  const medals=["g","s","b","",""];
+  const top=document.querySelector("#tops .card");top.innerHTML=home.top.map((r,i)=>{const d=r.delta;return nameRow(i+1,medals[i],r.name,r.count,`<span class="${d>=0?"up":"down"}">${d>=0?"↑":"↓"}${Math.abs(d)}</span>`)}).join("");
+  const boards=document.querySelectorAll("#tops .card");if(boards[1])boards[1].innerHTML=home.games.map((r,i)=>nameRow(i+1,medals[i],r.name,r.wins,`побед · ${r.fights?Math.round(100*r.wins/r.fights):0}%`)).join("");
+  const wolf=document.querySelector("#tops .wolf");if(wolf){wolf.style.display=home.wolf?"":"none";if(home.wolf)wolf.innerHTML=`<svg class="i cr" viewBox="0 0 24 24"><use href="#ic-crown"/></svg><span><b>${esc(home.wolf)}</b> — сердце всегда открыто, но этот волк ходит один</span>`;}
+  if(boards[2])boards[2].innerHTML=home.couples.map(c=>`<div class="couple"><span class="nm">${esc(c.a)}</span><span class="heart">❤️</span><span class="nm">${esc(c.b)}</span><span class="days">${c.days} дн.</span></div>`).join("")||"<div class='note'>пар пока нет</div>";
+  // profile
+  const badgeSet=new Set(me.badges.map(b=>b.code));
+  const goal=me.goal?`<div class="pline"><span>БЛИЖАЙШИЙ ЗНАЧОК</span><b>${esc(me.goal.title)} — ${me.goal.have}/${me.goal.need}</b></div>`:"";
+  document.getElementById("pcard").innerHTML=`<h2>Профиль <span class="balance">${me.frags} ФР</span></h2>
+    <div class="card hero"><div style="font-size:20px;font-weight:700;margin-bottom:4px">${esc(me.name)}</div>
+    <div style="color:var(--amber);font-size:13px;margin-bottom:12px">${esc(me.rank)}${me.next_rank?` <span style="color:var(--mut)">· до «${esc(me.next_rank)}» ещё ${me.to_next}</span>`:""}</div>
+    <div class="pline"><span>СООБЩЕНИЙ</span><b>сегодня ${me.messages.today} · неделя ${me.messages.week} · всего ${me.messages.total}</b></div>
+    <div class="pline"><span>РОЛЬ ДНЯ</span><b>${esc(me.role)}</b></div>
+    <div class="pline"><span>ДЕНЬ РОЖДЕНИЯ</span><b>${me.birthday?esc(me.birthday):"<span style='color:var(--mut)'>не указан — /bday 21.08 в чате</span>"}</b></div>
+    <div class="pline"><span>СЕМЬЯ</span><b>${me.spouse?`💍 ${esc(me.spouse.name)} · ${me.spouse.days} дн.`:"свободен(а)"}</b></div>
+    ${goal}
+    <div class="pline"><span>ЗНАЧКИ ${me.badges.length}/${me.catalog_size}</span><b></b></div>
+    <div class="pbadges">${me.badges.map(b=>`<span title="${esc(b.hint)}">${esc(b.title)}</span>`).join("")||"<span style='color:var(--mut)'>пока ни одного</span>"}</div></div>`;
+  // ranks ladder with people, badge cards with holders and "yours"
+  const ladder=document.querySelector("#profile .card:not(.hero)");
+  if(ladder){const cls=["g","s","b"];ladder.innerHTML=home.ranks.slice().reverse().map((r,i)=>nameRow(i<3?["♛","♜","♞"][i]:"·",cls[i]||"",`${r.title} · от ${r.from}`,r.people.length?`<span style="font-weight:400;font-size:12px">${r.people.length<=2?esc(r.people.join(", ")):r.people.length+" человек"}</span>`:`<span style="font-weight:400;font-size:12px;color:var(--mut)">никого</span>`)).join("");}
+  const grid=document.querySelector("#profile .grid");
+  if(grid){grid.innerHTML=home.badges.map(b=>{const mine=badgeSet.has(b.code);const em=b.title.split(" ")[0];const nm=b.title.slice(em.length+1);
+    return `<div class="bcard ${b.holders?"":"free"}" style="${mine?"border-color:#f5c84b99":""}"><div class="em">${em}</div><div class="nm">${esc(nm)}${mine?" ✓":""}</div><div class="hint">${esc(b.hint)}</div><div class="cnt">${b.holders?"у "+b.holders+" человек":"ничей — стань первым"}</div></div>`}).join("");}
+  // shop prices
+  document.querySelectorAll("#shop .srow .spr b").forEach((el,i)=>{if(home.shop[i])el.textContent=home.shop[i].price;});
+  // polls on the main tab
+  if(home.polls.length){const poll=home.polls[0];const card=document.querySelector("#main .card:nth-of-type(3)");if(card){card.querySelector("h2 span").textContent="🗳 "+poll.question.slice(0,28);card.querySelector("h2 .pill").textContent="до "+poll.closes;
+    const rows=card.querySelectorAll(".rowline");const bars=card.querySelectorAll(".tbar");poll.options.slice(0,2).forEach((o,i)=>{if(rows[i+1]){rows[i+1].firstElementChild.textContent=o.text;rows[i+1].lastElementChild.textContent=o.votes;}
+      const total=poll.options.reduce((a,x)=>a+x.votes,0)||1;if(bars[i])bars[i].firstElementChild.style.width=Math.round(100*o.votes/total)+"%";});}}
+}
+loadLive().then(afterLive).catch(e=>{console.log("demo mode:",e.message);document.getElementById("mode").textContent="ДЕМО";});
+
+// ---- games: one implementation, server when live, dice when demo ----
+async function play(path,body,demo){if(LIVE){const d=await api(path,{stake,...(body||{})});settle(d.frags);return d;}return demo();}
+function needStake(){if(!LIVE&&balance<stake){TF.set(100);return "Демо-фраги кончились — обнулил до 100. ";}return "";}
+
+// wheel
+const SECTORS=[2,0,5,0,1,0,20,0];let angle=0,spinning=false;
+function openWheel(){openOv("ov-wheel");const lab=document.getElementById("wlab");if(lab.childElementCount)return;
+  SECTORS.forEach((m,i)=>{const a=i*45+22.5;const sp=document.createElement("span");sp.textContent=m?"×"+m:"—";sp.style.transform=`rotate(${a}deg) translate(-50%,-92px) rotate(${-a}deg)`;lab.appendChild(sp);});}
+async function spin(){if(spinning)return;const note=needStake();spinning=true;document.getElementById("wres").textContent="Крутится…";
+  let idx,mult;try{const d=await play("/api/play/wheel",null,()=>{TF.set(balance-stake);const i=Math.floor(Math.random()*8);return {sector:i,mult:SECTORS[i],win:stake*SECTORS[i]};});idx=d.sector;mult=d.mult;
+    if(!LIVE)setTimeout(()=>TF.set(balance+d.win),4300);}catch(e){spinning=false;fail("wres",e);return;}
+  const target=360*5+(360-(idx*45+22.5));angle+=target-(angle%360);document.getElementById("wheel").style.transform=`rotate(${angle}deg)`;
+  setTimeout(()=>{spinning=false;document.getElementById("wres").innerHTML=note+(mult?`<b>×${mult}</b> — забираете ${stake*mult} фрагов!`:"<b>Мимо.</b> Ставка ушла в казну Штаба.");},4300);}
+
+// slot
+const SYM=["BAR","🍇","🍋","7️⃣"];let slotBusy=false;
+function openSlot(){openOv("ov-slot")}
+async function slot(){if(slotBusy)return;const note=needStake();slotBusy=true;
+  let d;try{d=await play("/api/play/slot",null,()=>{TF.set(balance-stake);const reels=[0,1,2].map(()=>pick(SYM));const n=new Set(reels).size;const win=n===1?(reels[0]==="7️⃣"?stake*10:stake*3):n===2?Math.floor(stake*1.2):0;return {reels,win,label:n===1?(reels[0]==="7️⃣"?"💰 ДЖЕКПОТ 7-7-7":"✨ Три в ряд"):n===2?"🙂 Пара":"💸 Мимо"};});}catch(e){slotBusy=false;fail("sres",e);return;}
+  const reels=[0,1,2].map(i=>document.getElementById("r"+i));reels.forEach(r=>{r.classList.remove("win");r.classList.add("spin")});
+  const tick=setInterval(()=>reels.forEach(r=>{if(r.classList.contains("spin"))r.textContent=pick(SYM)}),80);
+  [700,1300,1900].forEach((t,i)=>setTimeout(()=>{reels[i].classList.remove("spin");reels[i].textContent=d.reels[i];
+    if(i===2){clearInterval(tick);if(d.win){reels.forEach(r=>r.classList.add("win"));if(!LIVE)TF.set(balance+d.win);}
+      document.getElementById("sres").innerHTML=note+`<b>${esc(d.label)}</b> ${d.win?"+"+d.win+" фрагов":""}`;slotBusy=false;}},t));}
+
+// mines
+let mines=null;
+function openMines(){openOv("ov-mines");minesDraw();}
+function minesDraw(){const g=document.getElementById("mgrid");g.innerHTML="";for(let i=0;i<25;i++){const c=document.createElement("div");c.className="cell";c.onclick=()=>minesOpen(i);c.dataset.i=i;g.appendChild(c);}
+  document.getElementById("mopen").textContent="0";document.getElementById("mmult").textContent="×1.0";document.getElementById("mwin").textContent=stake;}
+function minesMult(k){let m=1;for(let i=0;i<k;i++)m*=(25-i)/(20-i);return m*0.95;}
+async function minesStart(){const note=needStake();minesDraw();
+  try{if(LIVE){const d=await api("/api/mines/start",{stake});settle(d.frags);mines={alive:true,open:new Set(),set:null};}
+    else{TF.set(balance-stake);const set=new Set();while(set.size<5)set.add(Math.floor(Math.random()*25));mines={set,open:new Set(),alive:true};}}catch(e){fail("mres",e);return;}
+  document.getElementById("mres").innerHTML=note+"Поле живое. Открывайте клетки.";document.getElementById("mstart").textContent="ЗАНОВО ЗА "+stake;}
+async function minesOpen(i){if(!mines||!mines.alive||mines.open.has(i))return;const c=document.querySelector(`.cell[data-i="${i}"]`);
+  let boom,minesAt,mult,cash;
+  try{if(LIVE){const d=await api("/api/mines/open",{cell:i});boom=d.boom;minesAt=d.mines;mult=d.mult;cash=d.cash;if(d.cashed!==undefined){settle(d.frags);minesShow(d.mines);mines.alive=false;document.getElementById("mres").innerHTML=`<b>Открыли всё — ${d.cashed} ваши.</b>`;return;}if(boom)settle(d.frags);}
+    else{boom=mines.set.has(i);minesAt=[...mines.set];}}catch(e){fail("mres",e);return;}
+  if(boom){mines.alive=false;c.classList.add("boom");c.textContent="💥";minesShow(minesAt);document.getElementById("mres").innerHTML="<b style='color:var(--red)'>БАБАХ.</b> Ставка сгорела.";return;}
+  mines.open.add(i);c.classList.add("safe");c.textContent="💎";const k=mines.open.size;mult=mult||minesMult(k);cash=cash||Math.floor(stake*minesMult(k));
+  document.getElementById("mopen").textContent=k;document.getElementById("mmult").textContent="×"+(+mult).toFixed(2);document.getElementById("mwin").textContent=cash;}
+function minesShow(at){(at||[]).forEach(k=>{const x=document.querySelector(`.cell[data-i="${k}"]`);if(x&&!x.classList.contains("safe")){x.textContent="💣";x.classList.add("boom");}});}
+async function minesCash(){if(!mines||!mines.alive||!mines.open.size)return;
+  try{if(LIVE){const d=await api("/api/mines/cash");settle(d.frags);mines.alive=false;minesShow(d.mines);document.getElementById("mres").innerHTML=`<b>Забрали ${d.cashed}.</b> Нервы — тоже скилл.`;}
+    else{const win=Math.floor(stake*minesMult(mines.open.size));mines.alive=false;TF.set(balance+win);minesShow([...mines.set]);document.getElementById("mres").innerHTML=`<b>Забрали ${win}.</b> Нервы — тоже скилл.`;}}catch(e){fail("mres",e);}}
+
+// blackjack
+let bj=null;const RANKS=["A","2","3","4","5","6","7","8","9","10","J","Q","K"],SUITS=["♠","♥","♦","♣"];
+function cardOf(v){return {r:v===11?"A":v===10?pick(["10","J","Q","K"]):String(v),s:pick(SUITS)}}
+function score(h){let t=0,a=0;h.forEach(c=>{if(c.r==="A"){a++;t+=11}else if("JQK".includes(c.r))t+=10;else t+=+c.r});while(t>21&&a){t-=10;a--}return t}
+function renderHand(id,h,hide){const b=document.getElementById(id);b.innerHTML="";h.forEach((c,i)=>{const d=document.createElement("div");d.className="cardf"+("♥♦".includes(c.s)?" red":"");if(hide&&i===1){d.className="cardf back";d.textContent="";}else d.textContent=c.r+c.s;b.appendChild(d)});}
+function openBj(){openOv("ov-bj")}
+function bjBtns(over){document.getElementById("bjbtns").innerHTML=over?`<div class="cta" onclick="bjStart()">ЕЩЁ ПАРТИЮ ЗА ${stake}</div>`:'<div class="cta" onclick="bjHit()">ЕЩЁ</div><div class="cta ghost" onclick="bjStand()">ХВАТИТ</div>';}
+function bjLive(d){bj={me:d.me.map(cardOf),d:d.house.map(cardOf),over:d.over};if(!d.over)bj.d.push({r:"?",s:""});renderHand("bme",bj.me);renderHand("bdealer",bj.d,!d.over);
+  document.getElementById("bmsum").textContent=d.me_score;document.getElementById("bdsum").textContent=d.over?d.house_score:"?";
+  document.getElementById("bres").innerHTML=d.over?"<b>"+esc(d.verdict)+"</b>":(needStake()+"Ещё или хватит?");bjBtns(d.over);}
+async function bjStart(){try{if(LIVE){const d=await api("/api/bj/start",{stake});settle(d.frags);bjLive(d);return;}}catch(e){fail("bres",e);return;}
+  const note=needStake();TF.set(balance-stake);bj={me:[draw(),draw()],d:[draw(),draw()],over:false};bjRender(true);document.getElementById("bres").innerHTML=note+"Ещё или хватит?";bjBtns(false);if(score(bj.me)===21)bjStand();}
+function draw(){return {r:pick(RANKS),s:pick(SUITS)}}
+function bjRender(hide){renderHand("bme",bj.me);renderHand("bdealer",bj.d,hide);document.getElementById("bmsum").textContent=score(bj.me);document.getElementById("bdsum").textContent=hide?"?":score(bj.d);}
+async function bjHit(){if(!bj||bj.over)return;if(LIVE){try{const d=await api("/api/bj/hit");settle(d.frags);bjLive(d);}catch(e){fail("bres",e);}return;}
+  bj.me.push(draw());bjRender(true);if(score(bj.me)>21)bjEnd("Перебор. Штаб забирает ставку.",0);}
+async function bjStand(){if(!bj||bj.over)return;if(LIVE){try{const d=await api("/api/bj/stand");settle(d.frags);bjLive(d);}catch(e){fail("bres",e);}return;}
+  while(score(bj.d)<17)bj.d.push(draw());const m=score(bj.me),d=score(bj.d);
+  if(d>21||m>d)bjEnd(m===21&&bj.me.length===2?"Очко с раздачи! ×2.5":"Ваша взяла! ×2",m===21&&bj.me.length===2?Math.floor(stake*2.5):stake*2);else if(m===d)bjEnd("Ничья — ставка вернулась.",stake);else bjEnd("Штаб ближе к 21.",0);}
+function bjEnd(t,win){bj.over=true;bjRender(false);if(win)TF.set(balance+win);document.getElementById("bres").innerHTML="<b>"+t+"</b>";bjBtns(true);}
+
+// coin
+let pot=0;
+function openCoin(){openOv("ov-coin");coinReset()}
+function coinReset(){pot=0;document.getElementById("cpot").textContent=stake;document.getElementById("coin").textContent="🪙";
+  document.getElementById("cres").textContent="Угадал сторону — банк удваивается. Дальше решай: ещё раз или забрать.";
+  document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ОРЁЛ</div><div class="cta" onclick="coinFlip(1)">🔢 РЕШКА</div>';}
+async function coinFlip(guess){const c=document.getElementById("coin");c.classList.remove("flip");void c.offsetWidth;c.classList.add("flip");
+  let side,won,newPot,capped=false,cashed;
+  try{if(LIVE){const d=await api("/api/coin/flip",{stake,guess});side=d.side;won=d.won;newPot=d.pot;capped=d.capped;cashed=d.cashed;settle(d.frags);}
+    else{if(pot===0){needStake();TF.set(balance-stake);pot=stake;}side=Math.random()<0.5?0:1;won=side===guess;newPot=won?pot*2:0;}}catch(e){fail("cres",e);return;}
+  setTimeout(()=>{c.textContent=side?"🔢":"🦅";
+    if(won){pot=newPot;document.getElementById("cpot").textContent=pot;
+      if(capped){document.getElementById("cres").innerHTML=`<b>Потолок!</b> ${cashed} фрагов ваши.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;return;}
+      document.getElementById("cres").innerHTML=`<b>Угадали!</b> На кону ${pot}.`;
+      document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ЕЩЁ</div><div class="cta" onclick="coinFlip(1)">🔢 ЕЩЁ</div><div class="cta ghost" onclick="coinCash()">ЗАБРАТЬ '+pot+'</div>';}
+    else{document.getElementById("cres").innerHTML=`<b style="color:var(--red)">Мимо.</b> Банк ${pot||stake} сгорел.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;}},900);}
+async function coinCash(){try{if(LIVE){const d=await api("/api/coin/cash");settle(d.frags);pot=d.cashed;}else TF.set(balance+pot);}catch(e){fail("cres",e);return;}
+  document.getElementById("cres").innerHTML=`<b>Забрали ${pot}.</b> Умеете вовремя выйти.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;}
+
+// dice vs house
+const FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];let diceBusy=false;
+function openDice(){openOv("ov-dice")}
+async function dice(){if(diceBusy)return;const note=needStake();diceBusy=true;
+  let d;try{d=await play("/api/play/dice",null,()=>{TF.set(balance-stake);const a=Math.floor(Math.random()*6)+1,b=Math.floor(Math.random()*6)+1;const win=a>b?stake*2:a===b?stake:0;setTimeout(()=>{if(win)TF.set(balance+win)},1100);return {me:a,house:b,win};});}catch(e){diceBusy=false;fail("dres",e);return;}
+  const me=document.getElementById("dme"),bot=document.getElementById("dbot");[me,bot].forEach(e=>e.classList.add("roll"));
+  const t=setInterval(()=>{me.textContent=pick(FACES);bot.textContent=pick(FACES)},90);
+  setTimeout(()=>{clearInterval(t);[me,bot].forEach(e=>e.classList.remove("roll"));me.textContent=FACES[d.me-1];bot.textContent=FACES[d.house-1];
+    document.getElementById("dres").innerHTML=note+(d.win>stake?"<b>Ваша взяла!</b> +"+d.win+" фрагов.":d.win===stake?"<b>Ничья.</b> Ставка вернулась.":"<b>Штаб выбросил больше.</b> Ставка ушла.");diceBusy=false;},1100);}
+
+// rps
+const RPS=["✊","✌️","✋"];
+function openRps(){openOv("ov-rps");document.getElementById("rres").textContent="Выбирайте — Штаб уже выбрал.";}
+async function rps(me){let d;try{d=await play("/api/play/rps",{pick:me},()=>{needStake();TF.set(balance-stake);const house=Math.floor(Math.random()*3);const win=me===house?stake:(me-house+3)%3===2?stake*2:0;if(win)TF.set(balance+win);return {house,win};});}catch(e){fail("rres",e);return;}
+  document.getElementById("rme").textContent=RPS[me];document.getElementById("rbot").textContent=RPS[d.house];
+  document.getElementById("rres").innerHTML=d.win>stake?"<b>Победа!</b> +"+d.win+" фрагов, Штаб в печали.":d.win===stake?"<b>Ничья.</b> Ставка возвращается.":"<b>Штаб забрал ставку.</b> Машины тоже умеют выигрывать.";}
+
+// duels between people (live only)
+let duelTimer=null,myId=null;
+function openDuel(){openOv("ov-duel");if(!LIVE){document.getElementById("dures").innerHTML="<b>Дуэли только в Telegram</b> — открой приложение из чата.";return;}duelRefresh();duelTimer=setInterval(duelRefresh,3000);}
+async function duelRefresh(){try{const d=await api("/api/duel/list");settle(d.frags);
+  const open=document.getElementById("duopen");open.innerHTML=d.open.length?d.open.map(x=>`<div class="duelrow"><span class="who">${esc(x.challenger)}</span><span style="color:var(--amber)">${x.stake} фр</span>${x.challenger_id===myId?`<div class="cta ghost" onclick="duelCancel(${x.id})">ОТОЗВАТЬ</div>`:`<div class="cta" onclick="duelAccept(${x.id})">ПРИНЯТЬ</div>`}</div>`).join(""):"<div class='note'>пока никого — будь первым</div>";
+  const mine=document.getElementById("dumine");mine.innerHTML=d.mine.filter(x=>!x.open).length?d.mine.filter(x=>!x.open).map(x=>{const won=x.winner_id===myId;return `<div class="duelrow"><span class="who">${esc(x.challenger)} ${FACES[x.rolls[0]-1]} vs ${FACES[x.rolls[1]-1]} ${esc(x.defender)}</span><b class="${won?"up":"down"}">${won?"+":"−"}${x.stake}</b></div>`}).join(""):"<div class='note'>ещё не дрался</div>";}catch(e){fail("dures",e);}}
+async function duelCreate(){try{const d=await api("/api/duel/create",{stake});myId=d.duel.challenger_id;document.getElementById("dures").innerHTML=`<b>Вызов на ${stake} висит.</b> Ждём смелого — окно обновляется само.`;duelRefresh();}catch(e){fail("dures",e);}}
+async function duelAccept(id){try{const d=await api("/api/duel/accept",{id});settle(d.frags);const x=d.duel;myId=x.defender_id;const won=x.winner_id===myId;
+  document.getElementById("dures").innerHTML=`${esc(x.challenger)} ${FACES[x.rolls[0]-1]} vs ${FACES[x.rolls[1]-1]} ${esc(x.defender)} — <b class="${won?"up":"down"}">${won?"ваша взяла, +"+x.stake:"проиграли "+x.stake}</b>`;duelRefresh();}catch(e){fail("dures",e);}}
+async function duelCancel(id){try{await api("/api/duel/cancel",{id});duelRefresh();}catch(e){fail("dures",e);}}
+loadLive.then?0:0;
+api("/api/me").then(m=>{myId=m.id}).catch(()=>{});
+
+// ---- people picker (members from the server) ----
+let PEOPLE=null,pickCb=null;
+async function pickPerson(title,cb){if(!LIVE){alert("Это работает только в Telegram — открой приложение из чата.");return;}
+  pickCb=cb;document.getElementById("pick-title").textContent=title;document.getElementById("pick-q").value="";openOv("ov-pick");
+  if(!PEOPLE){try{PEOPLE=(await api("/api/members")).members;}catch(e){document.getElementById("pick-list").innerHTML="<div class='note'>"+esc(e.message)+"</div>";return;}}
+  pickFilter();}
+function pickFilter(){const q=(document.getElementById("pick-q").value||"").toLowerCase();const list=(PEOPLE||[]).filter(p=>p.name.toLowerCase().includes(q)).slice(0,40);
+  document.getElementById("pick-list").innerHTML=list.map(p=>`<div class="duelrow" onclick="pickChoose(${p.id})"><span class="who">${esc(p.name)}</span><span style="color:var(--green)">›</span></div>`).join("")||"<div class='note'>никого не нашёл</div>";}
+function pickChoose(id){const cb=pickCb;pickCb=null;document.getElementById("ov-pick").classList.remove("on");if(cb)cb(id);}
+
+// ---- jab ----
+function openRoast(){openOv("ov-roast");}
+async function roastGo(id){openOv("ov-roast");document.getElementById("roastres").textContent="Подкалываю…";
+  try{const d=await api("/api/roast",{target:id});document.getElementById("roastres").innerHTML=`<b>Готово.</b> ${esc(d.target)} получил в чате: <i>${esc(d.phrase)}</i>`;}
+  catch(e){fail("roastres",e);}}
+
+// ---- shop ----
+const MARKS=["🔥","⚡","🐺","🐉","🌸","🦋","🌙","🌟"];
+function openMark(){if(!LIVE){alert("Лавка работает только в Telegram.");return;}openOv("ov-mark");const g=document.getElementById("marks");
+  g.innerHTML=MARKS.map(m=>`<div class="cell" style="font-size:28px" onclick="buy('mark',{mark:'${m}'},'markres')">${m}</div>`).join("");document.getElementById("markres").textContent="";}
+async function buy(item,extra,resId){if(!LIVE){alert("Лавка работает только в Telegram.");return;}const box=document.getElementById(resId||"shopres");
+  if(!extra&&!confirm("Купить? Спишутся фраги по цене из лавки."))return;
+  box.textContent="Покупаю…";try{const d=await api("/api/shop/buy",{item,...(extra||{})});settle(d.frags);box.innerHTML="<b>"+esc(d.done)+"</b>";}
+  catch(e){fail(resId||"shopres",e);}}
+
+// ---- aimed duels + deep link ----
+const _duelCreate=duelCreate;
+duelCreate=async function(targetId){try{const d=await api("/api/duel/create",targetId?{stake,target:targetId}:{stake});myId=d.duel.challenger_id;
+  document.getElementById("dures").innerHTML=targetId?`<b>Вызов для ${esc(d.duel.target)} на ${stake} отправлен.</b> Бот позвал его в теме игр.`:`<b>Вызов на ${stake} висит.</b> Ждём смелого — окно обновляется само.`;duelRefresh();}catch(e){fail("dures",e);}};
+const _duelRefresh=duelRefresh;
+duelRefresh=async function(){try{const d=await api("/api/duel/list");settle(d.frags);
+  const open=document.getElementById("duopen");open.innerHTML=d.open.length?d.open.map(x=>{const forMe=x.target_id&&x.target_id===myId;const mine=x.challenger_id===myId;
+    return `<div class="duelrow" style="${forMe?'background:#12301f;border-radius:12px;padding:10px':''}"><span class="who">${esc(x.challenger)}${x.target?` <span style="color:var(--mut)">→ ${esc(x.target)}</span>`:""}${forMe?' <b class="up">тебя зовут!</b>':''}</span><span style="color:var(--amber)">${x.stake} фр</span>${mine?`<div class="cta ghost" onclick="duelCancel(${x.id})">ОТОЗВАТЬ</div>`:(x.target_id&&!forMe)?'':`<div class="cta" onclick="duelAccept(${x.id})">ПРИНЯТЬ</div>`}</div>`}).join(""):"<div class='note'>пока никого — будь первым</div>";
+  const done=d.mine.filter(x=>!x.open);const mine=document.getElementById("dumine");mine.innerHTML=done.length?done.map(x=>{const won=x.winner_id===myId;return `<div class="duelrow"><span class="who">${esc(x.challenger)} ${FACES[x.rolls[0]-1]} vs ${FACES[x.rolls[1]-1]} ${esc(x.defender)}</span><b class="${won?"up":"down"}">${won?"+":"−"}${x.stake}</b></div>`}).join(""):"<div class='note'>ещё не дрался</div>";}catch(e){fail("dures",e);}};
+try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("duel_")){setTimeout(()=>{openDuel();},600);}}catch(e){}
+
+// ---- call wizard ----
+let callGame="dice", callPicked=new Set(), GAMES_META=null;
+async function openCall(){if(!LIVE){alert("Звать людей можно только в Telegram — открой приложение из чата.");return;}
+  openOv("ov-call");callPicked=new Set();document.getElementById("callres").textContent="";document.getElementById("call-q").value="";
+  try{if(!PEOPLE)PEOPLE=(await api("/api/members")).members;if(!GAMES_META)GAMES_META=(await api("/api/lobby/list")).games;}catch(e){fail("callres",e);return;}
+  renderCallGames();callFilter();}
+function renderCallGames(){document.getElementById("call-games").innerHTML=GAMES_META.map(g=>`<div class="cta ${g.code===callGame?'':'ghost'}" style="padding:12px 6px" onclick="callGame='${g.code}';renderCallGames();callFilter()">${g.icon} ${esc(g.title)}</div>`).join("");}
+function callFilter(){const q=(document.getElementById("call-q").value||"").toLowerCase();const max=(GAMES_META.find(g=>g.code===callGame)||{max:8}).max-1;
+  const list=(PEOPLE||[]).filter(p=>p.name.toLowerCase().includes(q)).slice(0,40);
+  document.getElementById("call-list").innerHTML=list.map(p=>`<div class="duelrow" onclick="callToggle(${p.id},${max})"><span class="who">${esc(p.name)}</span><span style="font-size:18px">${callPicked.has(p.id)?"✅":"○"}</span></div>`).join("")||"<div class='note'>никого не нашёл</div>";
+  document.getElementById("call-count").textContent=callPicked.size?`${callPicked.size} чел. (до ${max})`:"никого";}
+function callToggle(id,max){if(callPicked.has(id))callPicked.delete(id);else{if(callPicked.size>=max){alert("В эту игру больше не влезет.");return;}callPicked.add(id);}callFilter();}
+async function callGo(){if(!callPicked.size){document.getElementById("callres").innerHTML="<b>Отметь хотя бы одного.</b>";return;}
+  try{const d=await api("/api/lobby/create",{game:callGame,stake,invited:[...callPicked]});openLobby(d.lobby.id);}catch(e){fail("callres",e);}}
+
+// ---- lobby screen ----
+let lobbyId=null,lobbyTimer=null,lastState=null;
+async function openLobby(id){lobbyId=id;openOv("ov-lobby");clearInterval(lobbyTimer);await lobbyRefresh();lobbyTimer=setInterval(lobbyRefresh,2500);}
+function lobbyStop(){clearInterval(lobbyTimer);lobbyTimer=null;}
+const _closeOv=closeOv;closeOv=function(){_closeOv();lobbyStop();};
+async function lobbyRefresh(){if(!lobbyId)return;let lb;try{const d=await api("/api/lobby/get?id="+lobbyId);settle(d.frags);lb=d.lobby;}catch(e){fail("lb-res",e);lobbyStop();return;}
+  document.getElementById("lb-title").textContent=`${lb.icon} ${lb.title}`;
+  document.getElementById("lb-sub").textContent=lb.state==="open"?`ЗОВЁТ ${lb.host.toUpperCase()}`:lb.state==="done"?"СЫГРАНО":"ОТМЕНЕНО";
+  document.getElementById("lb-stake").textContent=`${lb.stake} ФР С КАЖДОГО`;
+  const res=lb.result||{};
+  document.getElementById("lb-people").innerHTML=lb.people.map(p=>{let tail="";
+    if(lb.state==="done"){if(res.rolls&&res.rolls[p.id]!==undefined)tail=FACES[res.rolls[p.id]-1];else if(res.order){const i=res.order.indexOf(p.id);tail=i<0?"🏆":"💀 "+(i+1);}else if(res.picks&&res.picks[p.id])tail=res.picks[p.id];
+      if(p.id===res.winner)tail+=" 🏆";}
+    else tail=p.ready?(lb.game==="rps"&&p.picked?"✅ выбрал":"✅ готов"):"⏳ ждём";
+    return `<div class="duelrow"><span class="who">${esc(p.name)}${p.id===lb.host_id?' <span style="color:var(--mut)">· зовёт</span>':''}</span><b>${tail}</b></div>`}).join("");
+  const box=document.getElementById("lb-actions");const r=document.getElementById("lb-res");
+  if(lb.state==="done"){lobbyStop();const won=res.winner===myId;const pot=lb.stake*(lb.people.filter(p=>p.ready).length-1);
+    r.innerHTML=won?`<b class="up">Ты забрал ${pot} фрагов!</b>`:`<b>Победил ${esc((lb.people.find(p=>p.id===res.winner)||{}).name||"кто-то")}.</b>${lb.you_ready?` <span class="down">−${lb.stake}</span>`:""}`;
+    box.innerHTML='<div class="cta" onclick="closeOv();openCall()">ЕЩЁ РАЗ</div>';return;}
+  if(lb.state==="cancelled"){lobbyStop();r.innerHTML="<b>Игра отменена.</b>";box.innerHTML='<div class="cta ghost" onclick="closeOv()">ЗАКРЫТЬ</div>';return;}
+  const ready=lb.people.filter(p=>p.ready).length;
+  if(!lb.you_in){r.textContent="В эту игру звали не тебя — но можешь посмотреть.";box.innerHTML="";return;}
+  if(!lb.you_ready){r.innerHTML=`Тебя зовут в <b>${esc(lb.title)}</b> на ${lb.stake}. Готов?`;box.innerHTML=`<div class="cta" onclick="lobbyAct('ready')">Я ГОТОВ</div><div class="cta ghost" onclick="lobbyAct('leave')">НЕТ</div>`;return;}
+  if(lb.game==="rps"){if(res.tie)r.innerHTML=`<b>Ничья ${res.tie.join(" ")}</b> — ещё раз.`;else r.textContent=lb.people.find(p=>p.id===myId&&p.picked)?"Ждём выбор соперника…":"Выбирай — соперник не увидит.";
+    box.innerHTML=ready<2?'<div class="note">ждём второго…</div>':RPS.map((e,i)=>`<div class="cta" style="font-size:26px;padding:10px" onclick="lobbyAct('pick',{pick:${i}})">${e}</div>`).join("")+(lb.you_host?'':'');
+    if(lb.you_host)box.innerHTML+=`<div class="cta ghost" onclick="lobbyAct('leave')">ОТМЕНИТЬ</div>`;return;}
+  r.innerHTML=`Готовы ${ready} из ${lb.people.length}. ${lb.you_host?(lb.can_start?"Можно начинать.":"Ждём хотя бы "+lb.min+" готовых."):"Ждём, когда "+esc(lb.host)+" нажмёт «Начать»."}`;
+  box.innerHTML=(lb.you_host?`<div class="cta ${lb.can_start?'':'ghost'}" onclick="${lb.can_start?"lobbyAct('start')":"void 0"}">НАЧАТЬ</div><div class="cta ghost" onclick="lobbyAct('leave')">ОТМЕНИТЬ</div>`:`<div class="cta ghost" onclick="lobbyAct('leave')">ВЫЙТИ</div>`);}
+async function lobbyAct(action,extra){try{const d=await api("/api/lobby/"+action,{id:lobbyId,...(extra||{})});settle(d.frags);if(action==="leave"&&!d.lobby.you_host){closeOv();return;}await lobbyRefresh();}catch(e){fail("lb-res",e);}}
+
+// ---- invites banner on the games tab ----
+async function invitesRefresh(){if(!LIVE)return;try{const d=await api("/api/lobby/list");const mine=d.invites;const box=document.getElementById("invites");
+  box.innerHTML=mine.map(lb=>`<div class="wolf" style="border-color:#2f6b40;cursor:pointer" onclick="openLobby(${lb.id})"><span style="font-size:22px">${lb.icon}</span><span><b>${lb.you_host?"Твоя игра":"Тебя зовут"}:</b> ${esc(lb.host)} · ${esc(lb.title)} · ${lb.stake} фр <span style="color:var(--green)">→ зайти</span></span></div>`).join("");}catch(e){}}
+setInterval(invitesRefresh,5000);
+function afterLive(){invitesRefresh();try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("lobby_"))openLobby(+sp.slice(6));}catch(e){}}
+
+function fitBig(){const b=document.getElementById("big");let size=46;b.style.fontSize=size+"px";while(b.scrollWidth>148&&size>26){size-=2;b.style.fontSize=size+"px";}}
+fitBig();paint(0);
+</script>
+</body></html>
