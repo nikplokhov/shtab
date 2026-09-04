@@ -747,8 +747,8 @@ F</span></div>
       <div class="btn" onclick="showTab('games')">🎮 ИГРЫ</div>
     </div>
     <div class="btnrow" style="margin-bottom:2px">
-      <div class="btn dim" onclick="go(CHAT)">🤝 ЖЕСТЫ</div>
-      <div class="btn dim" onclick="go(CHAT)">😈 ПОДКОЛОТЬ</div>
+      <div class="btn dim" onclick="go(CHAT)">🤝 ЖЕСТЫ · В ЧАТЕ</div>
+      <div class="btn dim" onclick="openRoast()">😈 ПОДКОЛОТЬ</div>
     </div>
   </div>
 
@@ -943,18 +943,19 @@ F</span></div>
 
 <section id="shop">
   <h2>Лавка <span class="balance"><span class="tfv">100</span> ФР</span></h2>
+  <div class="result" id="shopres" style="min-height:0;margin:0 0 10px"></div>
   <div class="note" style="text-align:left;margin:0 2px 12px">Фраги — за сообщения, победы и значки.<br>Тратятся только здесь, передать нельзя.</div>
-  <div class="srow" onclick="go(BOT+'?start=reroll')"><div class="sic">🎭</div>
+  <div class="srow" onclick="buy('reroll')"><div class="sic">🎭</div>
     <div class="sinfo"><div class="snm">Новая роль</div><div class="sds">перебросить «кто я сегодня»</div></div>
     <div class="spr"><b>100</b><small>фрагов</small></div></div>
-  <div class="srow hit" onclick="go(GAMES_TOPIC)"><div class="sic">🎲</div>
+  <div class="srow hit" onclick="buy('boost')"><div class="sic">🎲</div>
     <div class="sinfo"><div class="snm">Крупная игра<span class="tag">ХИТ</span></div>
     <div class="sds">до полуночи ставки до 500, потолок 1500</div></div>
     <div class="spr"><b>150</b><small>фрагов</small></div></div>
-  <div class="srow" onclick="go(GAMES_TOPIC)"><div class="sic">😈</div>
+  <div class="srow" onclick="pickPerson('Кого подколоть за 300?', id=>buy('roast',{target:id}))"><div class="sic">😈</div>
     <div class="sinfo"><div class="snm">Заказная подначка</div><div class="sds">бот подколет любого от вашего имени</div></div>
     <div class="spr"><b>300</b><small>фрагов</small></div></div>
-  <div class="srow" onclick="go(GAMES_TOPIC)"><div class="sic">✨</div>
+  <div class="srow" onclick="openMark()"><div class="sic">✨</div>
     <div class="sinfo"><div class="snm">Знак у имени</div><div class="sds">личный символ рядом с именем · 7 дней</div></div>
     <div class="spr"><b>800</b><small>фрагов</small></div></div>
 </section>
@@ -1044,12 +1045,33 @@ F</span></div>
     <div class="cta" onclick="dice()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>БРОСИТЬ ЗА 10</div></div>
 </div></div>
 
+<div class="overlay" id="ov-pick"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2 id="pick-title">Кого?</h2></div>
+  <div class="qcard"><input id="pick-q" placeholder="Начни писать имя…" oninput="pickFilter()"
+    style="width:100%;box-sizing:border-box;background:#0f1b2e;border:1px solid var(--line2);color:var(--txt);border-radius:12px;padding:12px 14px;font:inherit;font-size:14px;margin-bottom:10px">
+    <div id="pick-list"></div></div>
+</div></div>
+
+<div class="overlay" id="ov-mark"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>✨ Знак у имени</h2><span class="balance tfv">100</span></div>
+  <div class="qcard"><div class="result">Символ рядом с именем везде на 7 дней. Выберите свой:</div>
+    <div class="grid" id="marks" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="result" id="markres"></div></div>
+</div></div>
+
+<div class="overlay" id="ov-roast"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>😈 Подколоть</h2></div>
+  <div class="qcard"><div class="result" id="roastres">Бот подколет любого от вашего имени в Основном чате — подначка из пула клана, бесплатно, раз в полминуты.</div>
+    <div class="cta" onclick="pickPerson('Кого подколоть?', roastGo)">ВЫБРАТЬ ЖЕРТВУ</div></div>
+</div></div>
+
 <div class="overlay" id="ov-duel"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>⚔️ Дуэль 1 на 1</h2><span class="balance tfv">100</span></div>
   <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
   <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="result" id="dures">Кинь вызов — его увидит весь клан в этом окне. Кто примет, тот и соперник: два кубика, у кого больше — забирает ставку.</div>
-    <div class="cta" onclick="duelCreate()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>БРОСИТЬ ВЫЗОВ</div></div>
+    <div class="btn2"><div class="cta" onclick="duelCreate()">ВЫЗОВ ВСЕМ</div><div class="cta ghost" onclick="pickPerson('Кого вызвать?', id=>duelCreate(id))">ВЫЗВАТЬ ПО ИМЕНИ</div></div>
+    <div class="note" style="margin-top:10px">адресный вызов: человека упомянет бот в теме игр, принять сможет только он</div></div>
   <h2>Открытые вызовы</h2>
   <div class="qcard" id="duopen"><div class="note">пока никого — будь первым</div></div>
   <h2>Мои последние</h2>
@@ -1266,6 +1288,42 @@ async function duelAccept(id){try{const d=await api("/api/duel/accept",{id});set
 async function duelCancel(id){try{await api("/api/duel/cancel",{id});duelRefresh();}catch(e){fail("dures",e);}}
 loadLive.then?0:0;
 api("/api/me").then(m=>{myId=m.id}).catch(()=>{});
+
+// ---- people picker (members from the server) ----
+let PEOPLE=null,pickCb=null;
+async function pickPerson(title,cb){if(!LIVE){alert("Это работает только в Telegram — открой приложение из чата.");return;}
+  pickCb=cb;document.getElementById("pick-title").textContent=title;document.getElementById("pick-q").value="";openOv("ov-pick");
+  if(!PEOPLE){try{PEOPLE=(await api("/api/members")).members;}catch(e){document.getElementById("pick-list").innerHTML="<div class='note'>"+esc(e.message)+"</div>";return;}}
+  pickFilter();}
+function pickFilter(){const q=(document.getElementById("pick-q").value||"").toLowerCase();const list=(PEOPLE||[]).filter(p=>p.name.toLowerCase().includes(q)).slice(0,40);
+  document.getElementById("pick-list").innerHTML=list.map(p=>`<div class="duelrow" onclick="pickChoose(${p.id})"><span class="who">${esc(p.name)}</span><span style="color:var(--green)">›</span></div>`).join("")||"<div class='note'>никого не нашёл</div>";}
+function pickChoose(id){const cb=pickCb;pickCb=null;document.getElementById("ov-pick").classList.remove("on");if(cb)cb(id);}
+
+// ---- jab ----
+function openRoast(){openOv("ov-roast");}
+async function roastGo(id){openOv("ov-roast");document.getElementById("roastres").textContent="Подкалываю…";
+  try{const d=await api("/api/roast",{target:id});document.getElementById("roastres").innerHTML=`<b>Готово.</b> ${esc(d.target)} получил в чате: <i>${esc(d.phrase)}</i>`;}
+  catch(e){fail("roastres",e);}}
+
+// ---- shop ----
+const MARKS=["🔥","⚡","🐺","🐉","🌸","🦋","🌙","🌟"];
+function openMark(){if(!LIVE){alert("Лавка работает только в Telegram.");return;}openOv("ov-mark");const g=document.getElementById("marks");
+  g.innerHTML=MARKS.map(m=>`<div class="cell" style="font-size:28px" onclick="buy('mark',{mark:'${m}'},'markres')">${m}</div>`).join("");document.getElementById("markres").textContent="";}
+async function buy(item,extra,resId){if(!LIVE){alert("Лавка работает только в Telegram.");return;}const box=document.getElementById(resId||"shopres");
+  if(!extra&&!confirm("Купить? Спишутся фраги по цене из лавки."))return;
+  box.textContent="Покупаю…";try{const d=await api("/api/shop/buy",{item,...(extra||{})});settle(d.frags);box.innerHTML="<b>"+esc(d.done)+"</b>";}
+  catch(e){fail(resId||"shopres",e);}}
+
+// ---- aimed duels + deep link ----
+const _duelCreate=duelCreate;
+duelCreate=async function(targetId){try{const d=await api("/api/duel/create",targetId?{stake,target:targetId}:{stake});myId=d.duel.challenger_id;
+  document.getElementById("dures").innerHTML=targetId?`<b>Вызов для ${esc(d.duel.target)} на ${stake} отправлен.</b> Бот позвал его в теме игр.`:`<b>Вызов на ${stake} висит.</b> Ждём смелого — окно обновляется само.`;duelRefresh();}catch(e){fail("dures",e);}};
+const _duelRefresh=duelRefresh;
+duelRefresh=async function(){try{const d=await api("/api/duel/list");settle(d.frags);
+  const open=document.getElementById("duopen");open.innerHTML=d.open.length?d.open.map(x=>{const forMe=x.target_id&&x.target_id===myId;const mine=x.challenger_id===myId;
+    return `<div class="duelrow" style="${forMe?'background:#12301f;border-radius:12px;padding:10px':''}"><span class="who">${esc(x.challenger)}${x.target?` <span style="color:var(--mut)">→ ${esc(x.target)}</span>`:""}${forMe?' <b class="up">тебя зовут!</b>':''}</span><span style="color:var(--amber)">${x.stake} фр</span>${mine?`<div class="cta ghost" onclick="duelCancel(${x.id})">ОТОЗВАТЬ</div>`:(x.target_id&&!forMe)?'':`<div class="cta" onclick="duelAccept(${x.id})">ПРИНЯТЬ</div>`}</div>`}).join(""):"<div class='note'>пока никого — будь первым</div>";
+  const done=d.mine.filter(x=>!x.open);const mine=document.getElementById("dumine");mine.innerHTML=done.length?done.map(x=>{const won=x.winner_id===myId;return `<div class="duelrow"><span class="who">${esc(x.challenger)} ${FACES[x.rolls[0]-1]} vs ${FACES[x.rolls[1]-1]} ${esc(x.defender)}</span><b class="${won?"up":"down"}">${won?"+":"−"}${x.stake}</b></div>`}).join(""):"<div class='note'>ещё не дрался</div>";}catch(e){fail("dures",e);}};
+try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("duel_")){setTimeout(()=>{openDuel();},600);}}catch(e){}
 
 function fitBig(){const b=document.getElementById("big");let size=46;b.style.fontSize=size+"px";while(b.scrollWidth>148&&size>26){size-=2;b.style.fontSize=size+"px";}}
 fitBig();paint(0);
