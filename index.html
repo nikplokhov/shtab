@@ -1135,7 +1135,7 @@ const CHAT="https://t.me/c/2688020347/1", GAMES_TOPIC="https://t.me/c/2688020347
 function go(url){try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.openTelegramLink){Telegram.WebApp.openTelegramLink(url);return;}}catch(e){}window.open(url,"_blank");}
 
 // ---- live or demo ----
-const API="https://78-153-149-41.sslip.io";
+const API="https://80-253-251-44.sslip.io";
 const INIT=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)||"";
 let LIVE=false;
 async function api(path,body){const r=await fetch(API+path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json","X-Init-Data":INIT},body:body?JSON.stringify(body):undefined});
