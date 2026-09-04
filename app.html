@@ -1377,9 +1377,17 @@ async function lobbyRefresh(){if(!lobbyId)return;let lb;try{const d=await api("/
   document.getElementById("lb-sub").textContent=lb.state==="open"?`ЗОВЁТ ${lb.host.toUpperCase()}`:lb.state==="done"?"СЫГРАНО":"ОТМЕНЕНО";
   document.getElementById("lb-stake").textContent=`${lb.stake} ФР С КАЖДОГО`;
   const res=lb.result||{};
+  const hand=h=>h?h.map(v=>v===11?"A":v===10?"10":v).join(" "):"";
   document.getElementById("lb-people").innerHTML=lb.people.map(p=>{let tail="";
-    if(lb.state==="done"){if(res.rolls&&res.rolls[p.id]!==undefined)tail=FACES[res.rolls[p.id]-1];else if(res.order){const i=res.order.indexOf(p.id);tail=i<0?"🏆":"💀 "+(i+1);}else if(res.picks&&res.picks[p.id])tail=res.picks[p.id];
+    if(lb.state==="done"){if(res.rolls&&res.rolls[p.id]!==undefined)tail=FACES[res.rolls[p.id]-1];
+      else if(res.order){const i=res.order.indexOf(p.id);tail=i<0?"🏆":"💀 "+(i+1);}
+      else if(res.picks&&res.picks[p.id])tail=res.picks[p.id];
+      else if(res.scores&&res.scores[p.id]!==undefined)tail=`${hand(p.hand)} = ${res.scores[p.id]||"перебор"}`;
+      else if(res.spins&&res.spins[p.id])tail=`${res.spins[p.id].reels.join("")} ×${res.spins[p.id].mult}`;
+      else if(res.mults&&res.mults[p.id]!==undefined)tail=res.mults[p.id]?"×"+res.mults[p.id]:"—";
+      else if(res.side!==undefined)tail=p.id===lb.host_id?"🦅 орёл":"🔢 решка";
       if(p.id===res.winner)tail+=" 🏆";}
+    else if(lb.state==="playing")tail=`${hand(p.hand)} = ${p.score}${p.stood?" ✋":" …"}`;
     else tail=p.ready?(lb.game==="rps"&&p.picked?"✅ выбрал":"✅ готов"):"⏳ ждём";
     return `<div class="duelrow"><span class="who">${esc(p.name)}${p.id===lb.host_id?' <span style="color:var(--mut)">· зовёт</span>':''}</span><b>${tail}</b></div>`}).join("");
   const box=document.getElementById("lb-actions");const r=document.getElementById("lb-res");
@@ -1387,13 +1395,17 @@ async function lobbyRefresh(){if(!lobbyId)return;let lb;try{const d=await api("/
     r.innerHTML=won?`<b class="up">Ты забрал ${pot} фрагов!</b>`:`<b>Победил ${esc((lb.people.find(p=>p.id===res.winner)||{}).name||"кто-то")}.</b>${lb.you_ready?` <span class="down">−${lb.stake}</span>`:""}`;
     box.innerHTML='<div class="cta" onclick="closeOv();openCall()">ЕЩЁ РАЗ</div>';return;}
   if(lb.state==="cancelled"){lobbyStop();r.innerHTML="<b>Игра отменена.</b>";box.innerHTML='<div class="cta ghost" onclick="closeOv()">ЗАКРЫТЬ</div>';return;}
+  if(lb.state==="playing"){const meP=lb.people.find(p=>p.id===myId);
+    r.innerHTML=meP&&!meP.stood?"Карты в открытую. Ближе к 21 — забирает, перебор — ноль.":"Рука закрыта — ждём соперника…";
+    box.innerHTML=meP&&!meP.stood?`<div class="cta" onclick="lobbyAct('act',{action:'hit'})">ЕЩЁ</div><div class="cta ghost" onclick="lobbyAct('act',{action:'stand'})">ХВАТИТ</div>`:"";return;}
   const ready=lb.people.filter(p=>p.ready).length;
   if(!lb.you_in){r.textContent="В эту игру звали не тебя — но можешь посмотреть.";box.innerHTML="";return;}
   if(!lb.you_ready){r.innerHTML=`Тебя зовут в <b>${esc(lb.title)}</b> на ${lb.stake}. Готов?`;box.innerHTML=`<div class="cta" onclick="lobbyAct('ready')">Я ГОТОВ</div><div class="cta ghost" onclick="lobbyAct('leave')">НЕТ</div>`;return;}
   if(lb.game==="rps"){if(res.tie)r.innerHTML=`<b>Ничья ${res.tie.join(" ")}</b> — ещё раз.`;else r.textContent=lb.people.find(p=>p.id===myId&&p.picked)?"Ждём выбор соперника…":"Выбирай — соперник не увидит.";
     box.innerHTML=ready<2?'<div class="note">ждём второго…</div>':RPS.map((e,i)=>`<div class="cta" style="font-size:26px;padding:10px" onclick="lobbyAct('pick',{pick:${i}})">${e}</div>`).join("")+(lb.you_host?'':'');
     if(lb.you_host)box.innerHTML+=`<div class="cta ghost" onclick="lobbyAct('leave')">ОТМЕНИТЬ</div>`;return;}
-  r.innerHTML=`Готовы ${ready} из ${lb.people.length}. ${lb.you_host?(lb.can_start?"Можно начинать.":"Ждём хотя бы "+lb.min+" готовых."):"Ждём, когда "+esc(lb.host)+" нажмёт «Начать»."}`;
+  const coinNote=lb.game==="coin"?` Орёл — за ${esc(lb.host)}, решка — за гостя.`:"";
+  r.innerHTML=`Готовы ${ready} из ${lb.people.length}. ${lb.you_host?(lb.can_start?"Можно начинать.":"Ждём хотя бы "+lb.min+" готовых."):"Ждём, когда "+esc(lb.host)+" нажмёт «Начать»."}${coinNote}`;
   box.innerHTML=(lb.you_host?`<div class="cta ${lb.can_start?'':'ghost'}" onclick="${lb.can_start?"lobbyAct('start')":"void 0"}">НАЧАТЬ</div><div class="cta ghost" onclick="lobbyAct('leave')">ОТМЕНИТЬ</div>`:`<div class="cta ghost" onclick="lobbyAct('leave')">ВЫЙТИ</div>`);}
 async function lobbyAct(action,extra){try{const d=await api("/api/lobby/"+action,{id:lobbyId,...(extra||{})});settle(d.frags);if(action==="leave"&&!d.lobby.you_host){closeOv();return;}await lobbyRefresh();}catch(e){fail("lb-res",e);}}
 
