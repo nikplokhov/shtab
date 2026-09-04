@@ -124,6 +124,25 @@ padding:9px 2px;font-size:8.5px;letter-spacing:.8px;border:1px solid transparent
 .tab.on{background:linear-gradient(180deg,#1c4d2b88,#1c4d2b22);color:var(--green);border-color:#2f6b4066}
 section{display:none}section.on{display:block}
 /* --- playable test games --- */
+.wallet{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(165deg,#132238,#0f1b2e);
+border:1px solid var(--line2);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-size:11px;letter-spacing:1px;color:var(--mut)}
+.wallet b{font-size:18px;color:var(--txt);letter-spacing:0}
+.stakes{display:flex;gap:6px;margin:-4px 0 12px}
+.stakes span{flex:1;text-align:center;padding:8px 0;border-radius:10px;border:1px solid var(--line2);background:#0f1b2e;font-size:12px;color:var(--mut)}
+.stakes span.on{border-color:#2f6b40;background:#12301f;color:var(--green);font-weight:700}
+.mode{display:inline-block;margin-left:8px;font-size:9px;letter-spacing:1px;padding:3px 7px;border-radius:6px;border:1px solid #6b5a2f;color:var(--amber)}
+.mode.live{border-color:#2f6b40;color:var(--green)}
+.duelrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.duelrow:last-child{border-bottom:0}
+.duelrow .who{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.duelrow .cta{margin:0;padding:9px 12px;font-size:11px}
+.pline{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.pline:last-child{border-bottom:0}
+.pline span:first-child{color:var(--mut);font-size:11px;letter-spacing:1px;white-space:nowrap}
+.pline b{text-align:right}
+.pbadges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pbadges span{background:#12301f;border:1px solid #245c37;border-radius:10px;padding:5px 9px;font-size:12px}
+.wallet .d{font-size:14px;font-weight:700}
 .testbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(165deg,#302a12,#1c1a10);
 border:1px solid #6b5a2f99;border-radius:16px;padding:11px 14px;margin-bottom:12px;font-size:11px;color:var(--amber);letter-spacing:.5px}
 .testbar b{color:#ffe08a;font-size:14px}
@@ -143,7 +162,7 @@ transition:transform 4.2s cubic-bezier(.12,.75,.12,1)}
 .wlab{position:absolute;inset:0;pointer-events:none}
 .wlab span{position:absolute;left:50%;top:50%;font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 3px #000;
 transform-origin:0 0}
-.pin{position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;
+.pin{position:absolute;z-index:3;left:50%;top:-10px;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;
 border-right:12px solid transparent;border-top:22px solid var(--green);filter:drop-shadow(0 0 8px var(--green))}
 .result{text-align:center;font-size:15px;min-height:46px;margin:8px 0 12px;line-height:1.5}
 .result b{color:var(--green);font-size:22px}
@@ -709,7 +728,7 @@ F</span></div>
 
 <section id="main" class="on">
   <div class="card hero">
-    <div class="hero-title"><span class="pill"><span class="dot"></span>В СЕТИ</span><span class="t">Frag Hug · сезон осень</span></div>
+    <div class="hero-title"><span class="pill"><span class="dot"></span>В СЕТИ</span><span class="t">Frag Hug · сезон осень</span><span class="mode" id="mode">ДЕМО</span></div>
     <div class="ring">
       <svg class="r" width="206" height="206" viewBox="0 0 206 206">
         <circle cx="103" cy="103" r="90" fill="none" stroke="#132238" stroke-width="14"/>
@@ -724,12 +743,12 @@ F</span></div>
     <div class="bar"><i style="width:73%"></i></div>
     <div class="rowline" style="margin-bottom:10px">БЫСТРЫЕ ДЕЙСТВИЯ</div>
     <div class="btnrow">
-      <div class="btn">🎁 БОНУС ДНЯ</div>
-      <div class="btn">🎮 ИГРЫ</div>
+      <div class="btn" onclick="go(BOT+'?start=daily')">🎁 БОНУС ДНЯ</div>
+      <div class="btn" onclick="showTab('games')">🎮 ИГРЫ</div>
     </div>
     <div class="btnrow" style="margin-bottom:2px">
-      <div class="btn dim">🤝 ЖЕСТЫ</div>
-      <div class="btn dim">😈 ПОДКОЛОТЬ</div>
+      <div class="btn dim" onclick="go(CHAT)">🤝 ЖЕСТЫ</div>
+      <div class="btn dim" onclick="go(CHAT)">😈 ПОДКОЛОТЬ</div>
     </div>
   </div>
 
@@ -752,32 +771,23 @@ F</span></div>
     <div class="tbar"><i style="width:23%"></i></div>
     <div class="rowline" style="margin-top:9px"><span>МИМО</span><b class="down">10</b></div>
     <div class="tbar"><i style="width:77%;background:var(--red)"></i></div>
-    <div class="note" style="margin-top:12px;margin-bottom:0">голосование закроется в субботу в 12:00</div>
+    <div class="cta" style="margin:12px 0 0;padding:12px" onclick="go('https://t.me/c/2688020347/21085')">ГОЛОСОВАТЬ В ТЕМЕ</div>
+    <div class="note" style="margin-top:8px;margin-bottom:0">закроется в субботу в 12:00</div>
   </div>
   <div class="card" style="padding:14px 18px">
     <div class="rowline"><span>СКОРО В ПРИЛОЖЕНИИ</span><span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">В РАЗРАБОТКЕ</span></div>
     <div class="sds" style="margin-top:8px;font-size:12px">🎮 дуэли 1 на 1 · 🧠 квиз по CODM · 🎡 колесо фортуны — на фраги, с таблицей рекордов</div>
   </div>
-  <div class="cta"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>ОТКРЫТЬ ЧАТ КЛАНА</div>
+  <div class="cta" onclick="go(CHAT)"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>ОТКРЫТЬ ЧАТ КЛАНА</div>
   <div class="note">завтра в 12:00 — коронация Легенды августа</div>
 </section>
 
 
 <section id="games">
-  <h2>Игры <span class="balance">В ТЕМЕ «ИГРЫ И КАЗИНО»</span></h2>
-  <div class="grid">
-    <div class="gcard" style="--a:#4fd97a"><div class="em">🎲</div><div class="nm">Дуэль</div><div class="hint">кубик — у кого больше</div><div class="cnt">133 партии за неделю</div></div>
-    <div class="gcard" style="--a:#e87d7d"><div class="em">🔫</div><div class="nm">Рулетка</div><div class="hint">2–8 игроков, последний живой</div><div class="cnt">хит недели · 85 партий</div></div>
-    <div class="gcard" style="--a:#f5c84b"><div class="em">🃏</div><div class="nm">Очко</div><div class="hint">против Штаба или 1 на 1</div><div class="cnt">11 партий</div></div>
-    <div class="gcard" style="--a:#c08cff"><div class="em">🎰</div><div class="nm">Слот</div><div class="hint">7-7-7 ×10, ставки до 200</div><div class="cnt">57 прокруток</div></div>
-    <div class="gcard" style="--a:#6fb7ff"><div class="em">✊</div><div class="nm">Камень-ножницы</div><div class="hint">выбор скрыт до конца</div><div class="cnt">38 партий</div></div>
-    <div class="gcard" style="--a:#ff9f6e"><div class="em">🎯</div><div class="nm">Тир и спорт</div><div class="hint">дартс · баскет · футбол · боулинг</div><div class="cnt">135 партий</div></div>
-    <div class="gcard" style="--a:#4fd97a"><div class="em">🎭</div><div class="nm">Кто я сегодня</div><div class="hint">роль на день, перебросить — 100 фр</div><div class="cnt">каждый день новая</div></div>
-    <div class="gcard" style="--a:#e87d7d"><div class="em">😈</div><div class="nm">Подколоть</div><div class="hint">686 подначек в пуле</div><div class="cnt">ответом на сообщение</div></div>
-  </div>
-  <h2 style="margin-top:16px">Игры в приложении <span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">ТЕСТ</span></h2>
+  <h2>Игры в приложении <span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">ТЕСТ</span></h2>
   <div class="testbar"><span>ТЕСТОВЫЙ БАЛАНС · фраги не настоящие до переезда</span><b id="tf">100</b></div>
   <div class="grid">
+    <div class="gcard play" style="--a:#e87d7d;grid-column:1/-1" onclick="openDuel()"><div class="em">⚔️</div><div class="nm">Дуэль 1 на 1</div><div class="hint">вызов любому в клане — кубик решает, ставка переходит победителю</div><div class="cnt" id="duelcnt">играть →</div></div>
     <div class="gcard play" style="--a:#f5c84b" onclick="openWheel()"><div class="em">🎡</div><div class="nm">Колесо фортуны</div><div class="hint">ставка 10, до ×20</div><div class="cnt">играть →</div></div>
     <div class="gcard play" style="--a:#c08cff" onclick="openSlot()"><div class="em">🎰</div><div class="nm">Слот</div><div class="hint">7-7-7 ×10 · три в ряд ×3 · пара ×1.2</div><div class="cnt">играть →</div></div>
     <div class="gcard play" style="--a:#e87d7d" onclick="openMines()"><div class="em">💣</div><div class="nm">Минное поле</div><div class="hint">5 мин на 25 клеток, забирай вовремя</div><div class="cnt">играть →</div></div>
@@ -785,9 +795,20 @@ F</span></div>
     <div class="gcard play" style="--a:#6fb7ff" onclick="openCoin()"><div class="em">🪙</div><div class="nm">Удвоение</div><div class="hint">орёл или решка — удвой или забери</div><div class="cnt">играть →</div></div>
     <div class="gcard play" style="--a:#4fd97a" onclick="openDice()"><div class="em">🎲</div><div class="nm">Кубик</div><div class="hint">против Штаба, у кого больше</div><div class="cnt">играть →</div></div>
     <div class="gcard play" style="--a:#4fd97a" onclick="openRps()"><div class="em">✊</div><div class="nm">Против Штаба</div><div class="hint">камень-ножницы, ставка 10</div><div class="cnt">играть →</div></div>
-    <div class="gcard soon" style="--a:#c08cff"><div class="em">⚔️</div><div class="nm">Дуэли 1 на 1</div><div class="hint">живой соперник — после переезда</div></div>
+    
   </div>
-</section>
+<h2 style="margin-top:16px">Игры в чате <span class="balance">ОТКРЫВАЮТСЯ В ТЕМЕ</span></h2>
+  <div class="grid">
+    <div class="gcard" style="--a:#4fd97a" onclick="go(GAMES_TOPIC)"><div class="em">🎲</div><div class="nm">Дуэль</div><div class="hint">кубик — у кого больше</div><div class="cnt">133 партии за неделю</div></div>
+    <div class="gcard" style="--a:#e87d7d" onclick="go(GAMES_TOPIC)"><div class="em">🔫</div><div class="nm">Рулетка</div><div class="hint">2–8 игроков, последний живой</div><div class="cnt">хит недели · 85 партий</div></div>
+    <div class="gcard" style="--a:#f5c84b" onclick="go(GAMES_TOPIC)"><div class="em">🃏</div><div class="nm">Очко</div><div class="hint">против Штаба или 1 на 1</div><div class="cnt">11 партий</div></div>
+    <div class="gcard" style="--a:#c08cff" onclick="go(GAMES_TOPIC)"><div class="em">🎰</div><div class="nm">Слот</div><div class="hint">7-7-7 ×10, ставки до 200</div><div class="cnt">57 прокруток</div></div>
+    <div class="gcard" style="--a:#6fb7ff" onclick="go(GAMES_TOPIC)"><div class="em">✊</div><div class="nm">Камень-ножницы</div><div class="hint">выбор скрыт до конца</div><div class="cnt">38 партий</div></div>
+    <div class="gcard" style="--a:#ff9f6e" onclick="go(GAMES_TOPIC)"><div class="em">🎯</div><div class="nm">Тир и спорт</div><div class="hint">дартс · баскет · футбол · боулинг</div><div class="cnt">135 партий</div></div>
+    <div class="gcard" style="--a:#4fd97a" onclick="go(GAMES_TOPIC)"><div class="em">🎭</div><div class="nm">Кто я сегодня</div><div class="hint">роль на день, перебросить — 100 фр</div><div class="cnt">каждый день новая</div></div>
+    <div class="gcard" style="--a:#e87d7d" onclick="go(GAMES_TOPIC)"><div class="em">😈</div><div class="nm">Подколоть</div><div class="hint">686 подначек в пуле</div><div class="cnt">ответом на сообщение</div></div>
+  </div>
+  </section>
 
 <section id="tops">
   <h2>Топ недели <span class="balance">7 ДНЕЙ</span></h2>
@@ -833,7 +854,8 @@ F</span></div>
   </div>
 </section>
 
-<section id="badges">
+<section id="profile">
+  <div id="pcard"></div>
   <h2>Звания <span class="balance">ПО СООБЩЕНИЯМ</span></h2>
   <div class="wolf" style="border-color:#6b5a2f99"><span style="font-size:20px">👑</span>
     <span><b>✦ ᴨᴀᴨᴏчᴋᴀ ✦</b> · Краш клана — только у владельца</span></div>
@@ -922,40 +944,40 @@ F</span></div>
 <section id="shop">
   <h2>Лавка <span class="balance">99 999 ФР</span></h2>
   <div class="note" style="text-align:left;margin:0 2px 12px">Фраги — за сообщения, победы и значки.<br>Тратятся только здесь, передать нельзя.</div>
-  <div class="srow"><div class="sic">🎭</div>
+  <div class="srow" onclick="go(BOT+'?start=reroll')"><div class="sic">🎭</div>
     <div class="sinfo"><div class="snm">Новая роль</div><div class="sds">перебросить «кто я сегодня»</div></div>
     <div class="spr"><b>100</b><small>фрагов</small></div></div>
-  <div class="srow hit"><div class="sic">🎲</div>
+  <div class="srow hit" onclick="go(GAMES_TOPIC)"><div class="sic">🎲</div>
     <div class="sinfo"><div class="snm">Крупная игра<span class="tag">ХИТ</span></div>
     <div class="sds">до полуночи ставки до 500, потолок 1500</div></div>
     <div class="spr"><b>150</b><small>фрагов</small></div></div>
-  <div class="srow"><div class="sic">😈</div>
+  <div class="srow" onclick="go(GAMES_TOPIC)"><div class="sic">😈</div>
     <div class="sinfo"><div class="snm">Заказная подначка</div><div class="sds">бот подколет любого от вашего имени</div></div>
     <div class="spr"><b>300</b><small>фрагов</small></div></div>
-  <div class="srow"><div class="sic">✨</div>
+  <div class="srow" onclick="go(GAMES_TOPIC)"><div class="sic">✨</div>
     <div class="sinfo"><div class="snm">Знак у имени</div><div class="sds">личный символ рядом с именем · 7 дней</div></div>
     <div class="spr"><b>800</b><small>фрагов</small></div></div>
 </section>
 
 <section id="admin">
   <h2>Кабинет <span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">ВЛАДЕЛЕЦ</span></h2>
-  <div class="srow"><div class="sic">📢</div>
+  <div class="srow" onclick="go(BOT+'?start=announce')"><div class="sic">📢</div>
     <div class="sinfo"><div class="snm">От имени Штаба</div><div class="sds">объявление в любую тему</div></div>
     <div class="go">›</div></div>
-  <div class="srow"><div class="sic">🗳</div>
+  <div class="srow" onclick="go(BOT+'?start=vote')"><div class="sic">🗳</div>
     <div class="sinfo"><div class="snm">Голосование</div><div class="sds">кастомки, споры, что угодно</div></div>
     <div class="go">›</div></div>
-  <div class="srow"><div class="sic">📣</div>
+  <div class="srow" onclick="go(BOT+'?start=muster')"><div class="sic">📣</div>
     <div class="sinfo"><div class="snm">Созыв</div><div class="sds">за час бот сам дожмёт молчунов</div></div>
     <div class="go">›</div></div>
-  <div class="srow"><div class="sic">🤫</div>
-    <div class="sinfo"><div class="snm">Тихий час</div><div class="sds">игры и подначки подождут</div></div>
-    <div class="toggle"><i></i></div></div>
-  <div class="srow"><div class="sic">👥</div>
+  <div class="srow" onclick="go(BOT+'?start=quiet')"><div class="sic">🤫</div>
+    <div class="sinfo"><div class="snm">Тихий час</div><div class="sds">включить или выключить — в личке бота</div></div>
+    <div class="go">›</div></div>
+  <div class="srow" onclick="go(BOT+'?start=roster')"><div class="sic">👥</div>
     <div class="sinfo"><div class="snm">Движение состава</div>
     <div class="sds">за неделю: <b class="up">+14 пришли</b> · <b class="down">−7 вышли</b> · в клане 66</div></div>
     <div class="go">›</div></div>
-  <div class="srow"><div class="sic">🪦</div>
+  <div class="srow" onclick="go(BOT+'?start=inactive')"><div class="sic">🪦</div>
     <div class="sinfo"><div class="snm">Неактивные</div><div class="sds">радар молчунов за 14 дней</div></div>
     <div class="go">›</div></div>
 </section>
@@ -964,6 +986,8 @@ F</span></div>
 
 <div class="overlay" id="ov-wheel"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🎡 Колесо фортуны</h2><span class="balance" id="tf2">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
   <div class="wheelwrap"><div class="pin"></div><div class="wheel" id="wheel"><div class="wlab" id="wlab"></div></div></div>
   <div class="result" id="wres">Ставка 10 фрагов. Крути — сектор решает.</div>
   <div class="cta" onclick="spin()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>КРУТИТЬ ЗА 10</div>
@@ -975,6 +999,8 @@ F</span></div>
 
 <div class="overlay" id="ov-slot"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🎰 Слот</h2><span class="balance" id="tf4">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="reels"><div class="reel" id="r0">7️⃣</div><div class="reel" id="r1">🍇</div><div class="reel" id="r2">🍋</div></div>
     <div class="result" id="sres">Ставка 10. 7-7-7 — ×10, три в ряд — ×3, пара — ×1.2.</div>
     <div class="cta" onclick="slot()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>КРУТИТЬ ЗА 10</div></div>
@@ -982,6 +1008,8 @@ F</span></div>
 
 <div class="overlay" id="ov-mines"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>💣 Минное поле</h2><span class="balance" id="tf5">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="mult"><span>ОТКРЫТО <b id="mopen" style="font-size:13px;color:var(--txt)">0</b></span><span>МНОЖИТЕЛЬ <b id="mmult">×1.0</b></span><span>ЗАБРАТЬ <b id="mwin">10</b></span></div>
     <div class="mines" id="mgrid"></div>
     <div class="result" id="mres">Ставка 10. Под пятью клетками мины. Каждая безопасная — множитель растёт.</div>
@@ -990,6 +1018,8 @@ F</span></div>
 
 <div class="overlay" id="ov-bj"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🃏 Очко</h2><span class="balance" id="tf6">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="hlabel"><span>ШТАБ</span><b id="bdsum">—</b></div><div class="hand" id="bdealer"></div>
     <div class="hlabel"><span>ВЫ</span><b id="bmsum">—</b></div><div class="hand" id="bme"></div>
     <div class="result" id="bres">Ставка 10. Ближе к 21 — забираете 20, перебор — ноль.</div>
@@ -998,6 +1028,8 @@ F</span></div>
 
 <div class="overlay" id="ov-coin"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🪙 Удвоение</h2><span class="balance" id="tf7">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="coin" id="coin">🪙</div><div class="pot">НА КОНУ<b id="cpot">10</b></div>
     <div class="result" id="cres">Угадал сторону — банк удваивается. Дальше решай: ещё раз или забрать.</div>
     <div class="btn2" id="cbtns"><div class="cta" onclick="coinFlip(0)">🦅 ОРЁЛ</div><div class="cta" onclick="coinFlip(1)">🔢 РЕШКА</div></div></div>
@@ -1005,13 +1037,29 @@ F</span></div>
 
 <div class="overlay" id="ov-dice"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🎲 Кубик</h2><span class="balance" id="tf8">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="dicebox"><div><span id="dme">⚄</span><small>ВЫ</small></div><div style="font-size:16px;color:var(--mut)">VS</div><div><span id="dbot">⚂</span><small>ШТАБ</small></div></div>
     <div class="result" id="dres">Ставка 10. У кого больше — тот забирает 20. Ничья — возврат.</div>
     <div class="cta" onclick="dice()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>БРОСИТЬ ЗА 10</div></div>
 </div></div>
 
+<div class="overlay" id="ov-duel"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>⚔️ Дуэль 1 на 1</h2><span class="balance tfv">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
+  <div class="qcard"><div class="result" id="dures">Кинь вызов — его увидит весь клан в этом окне. Кто примет, тот и соперник: два кубика, у кого больше — забирает ставку.</div>
+    <div class="cta" onclick="duelCreate()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>БРОСИТЬ ВЫЗОВ</div></div>
+  <h2>Открытые вызовы</h2>
+  <div class="qcard" id="duopen"><div class="note">пока никого — будь первым</div></div>
+  <h2>Мои последние</h2>
+  <div class="qcard" id="dumine"><div class="note">ещё не дрался</div></div>
+</div></div>
+
 <div class="overlay" id="ov-rps"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>✊ Против Штаба</h2><span class="balance" id="tf3">100</span></div>
+  <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
+  <div class="stakes" data-stakes></div>
   <div class="qcard">
     <div class="duel"><div><span id="rme">❔</span><small>ВЫ</small></div><div style="font-size:16px;color:var(--mut)">VS</div><div><span id="rbot">🤖</span><small>ШТАБ</small></div></div>
     <div class="result" id="rres">Ставка 10. Выбирайте — Штаб уже выбрал.</div>
@@ -1020,135 +1068,206 @@ F</span></div>
 </div></div>
 
 <div class="tabs"><div class="tabbar">
-  <div class="tab on" data-t="main"><svg class="i" viewBox="0 0 24 24"><use href="#ic-home"/></svg>ГЛАВНАЯ</div>
   <div class="tab" data-t="games"><svg class="i" viewBox="0 0 24 24"><use href="#ic-dice"/></svg>ИГРЫ</div>
+  <div class="tab" data-t="main"><svg class="i" viewBox="0 0 24 24"><use href="#ic-home"/></svg>ГЛАВНАЯ</div>
   <div class="tab" data-t="tops"><svg class="i" viewBox="0 0 24 24"><use href="#ic-cup"/></svg>ТОПЫ</div>
-  <div class="tab" data-t="badges"><svg class="i" viewBox="0 0 24 24"><use href="#ic-medal"/></svg>ЗНАЧКИ</div>
+  <div class="tab" data-t="profile"><svg class="i" viewBox="0 0 24 24"><use href="#ic-medal"/></svg>ПРОФИЛЬ</div>
   <div class="tab" data-t="shop"><svg class="i" viewBox="0 0 24 24"><use href="#ic-bag"/></svg>ЛАВКА</div>
 </div></div>
 <script>
 try{Telegram.WebApp.ready();Telegram.WebApp.expand();Telegram.WebApp.setHeaderColor("#0a1322");Telegram.WebApp.setBackgroundColor("#0a1322");}catch(e){}
-document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
-  document.querySelectorAll(".tabbar .tab").forEach(x=>x.classList.remove("on"));
-  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
-  t.classList.add("on");document.getElementById(t.dataset.t).classList.add("on");
-  window.scrollTo(0,0);});
+function showTab(id){document.querySelectorAll(".tabbar .tab").forEach(x=>x.classList.toggle("on",x.dataset.t===id));
+  document.querySelectorAll("section").forEach(x=>x.classList.toggle("on",x.id===id));window.scrollTo(0,0);}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showTab(t.dataset.t));
+showTab("games");
 
+// ---- links ----
+const CHAT="https://t.me/c/2688020347/1", GAMES_TOPIC="https://t.me/c/2688020347/76487", BOT="https://t.me/FH_shtab_bot";
+function go(url){try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.openTelegramLink){Telegram.WebApp.openTelegramLink(url);return;}}catch(e){}window.open(url,"_blank");}
 
-// ---- test frags (local only; the real ledger lives on the server) ----
-const TF = {get(){try{return +(localStorage.getItem("shtab_tf") ?? 100)}catch(e){return 100}},
-  set(v){try{localStorage.setItem("shtab_tf", v)}catch(e){} ["tf","tf2","tf3","tf4","tf5","tf6","tf7","tf8"].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=v;});}};
-TF.set(TF.get());
+// ---- live or demo ----
+const API="https://78-153-149-41.sslip.io";
+const INIT=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)||"";
+let LIVE=false;
+async function api(path,body){const r=await fetch(API+path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json","X-Init-Data":INIT},body:body?JSON.stringify(body):undefined});
+  const d=await r.json().catch(()=>({error:"Сервер молчит"}));if(!r.ok)throw new Error(d.error||("HTTP "+r.status));return d;}
+function esc(t){return String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+
+// ---- wallet (demo: local; live: what the server says) ----
+let tfTotal=0, balance=100;
+const TF={get(){return balance},set(v){const d=v-balance;if(d)tfTotal+=d;balance=v;paint(d);}};
+function paint(d){document.querySelectorAll("#tf,.tfv").forEach(el=>el.textContent=balance);
+  document.querySelectorAll(".tfd").forEach(el=>{el.textContent=d?(d>0?"+"+d:""+d):"—";el.style.color=d>0?"var(--green)":d<0?"var(--red)":"var(--mut)";});
+  document.querySelectorAll(".tft").forEach(el=>{el.textContent=(tfTotal>0?"+":"")+tfTotal;el.style.color=tfTotal>0?"var(--green)":tfTotal<0?"var(--red)":"var(--mut)";});}
+function settle(frags){if(typeof frags==="number")TF.set(frags);}
+let stake=10;
+document.querySelectorAll("[data-stakes]").forEach(box=>{[10,25,50,100].forEach(v=>{const sp=document.createElement("span");sp.textContent=v;sp.className=v===stake?"on":"";
+  sp.onclick=()=>{stake=v;document.querySelectorAll("[data-stakes] span").forEach(x=>x.classList.toggle("on",+x.textContent===v));};box.appendChild(sp);});});
+function fail(id,e){document.getElementById(id).innerHTML="<b style='color:var(--red)'>"+esc(e.message||e)+"</b>";}
 function openOv(id){document.getElementById(id).classList.add("on");window.scrollTo(0,0)}
-function closeOv(){document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("on"))}
-
-// ---- wheel ----
-const SECTORS=[2,0,5,0,1,0,20,0]; // multipliers, clockwise from the top
-let angle=0, spinning=false;
-function openWheel(){openOv("ov-wheel");const lab=document.getElementById("wlab");if(lab.childElementCount)return;
-  SECTORS.forEach((m,i)=>{const a=i*45+22.5;const sp=document.createElement("span");sp.textContent=m?"×"+m:"—";
-    sp.style.transform=`rotate(${a}deg) translate(-50%,-92px) rotate(${-a}deg)`;lab.appendChild(sp);});}
-function spin(){if(spinning)return;if(TF.get()<10){document.getElementById("wres").innerHTML="Тестовые фраги кончились. <b>Обнулю до 100.</b>";TF.set(100);return;}
-  spinning=true;TF.set(TF.get()-10);document.getElementById("wres").textContent="Крутится…";
-  const idx=Math.floor(Math.random()*8);const target=360*5+(360-(idx*45+22.5));angle+=target-(angle%360);
-  document.getElementById("wheel").style.transform=`rotate(${angle}deg)`;
-  setTimeout(()=>{const m=SECTORS[idx];const win=10*m;TF.set(TF.get()+win);spinning=false;
-    document.getElementById("wres").innerHTML=m?`<b>×${m}</b> — забираете ${win} фрагов!`:"<b>Мимо.</b> Ставка ушла в казну Штаба.";},4300);}
-
-
-// ---- helpers ----
-function needStake(){if(TF.get()<10){TF.set(100);return "Тестовые фраги кончились — обнулил до 100. ";}return "";}
+function closeOv(){document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("on"));clearInterval(duelTimer);}
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 
-// ---- slot (64 equiprobable outcomes, same maths as the chat casino) ----
+// ---- home & profile from the server ----
+function nameRow(place,cls,name,val,sub){return `<div class="trow"><div class="place ${cls}">${place}</div><div class="tinfo"><div class="tname">${esc(name)}</div></div><div class="tval">${val}${sub?`<small>${sub}</small>`:""}</div></div>`}
+async function loadLive(){
+  const [home,me]=await Promise.all([api("/api/home"),api("/api/me")]);
+  LIVE=true;document.getElementById("mode").textContent="LIVE";document.getElementById("mode").classList.add("live");
+  document.querySelector(".testbar").innerHTML="<span>НАСТОЯЩИЕ ФРАГИ · общий кошелёк с чатом</span><b class=\"tfv\">"+me.frags+"</b>";
+  balance=me.frags;tfTotal=0;paint(0);
+  document.getElementById("big").textContent=home.week_messages.toLocaleString("ru-RU");fitBig();
+  document.querySelector(".sub").innerHTML=`нас в клане <b>${home.members} человек</b><small>цифры живые — прямо из базы Штаба</small>`;
+  const medals=["g","s","b","",""];
+  const top=document.querySelector("#tops .card");top.innerHTML=home.top.map((r,i)=>{const d=r.delta;return nameRow(i+1,medals[i],r.name,r.count,`<span class="${d>=0?"up":"down"}">${d>=0?"↑":"↓"}${Math.abs(d)}</span>`)}).join("");
+  const boards=document.querySelectorAll("#tops .card");if(boards[1])boards[1].innerHTML=home.games.map((r,i)=>nameRow(i+1,medals[i],r.name,r.wins,`побед · ${r.fights?Math.round(100*r.wins/r.fights):0}%`)).join("");
+  const wolf=document.querySelector("#tops .wolf");if(wolf){wolf.style.display=home.wolf?"":"none";if(home.wolf)wolf.innerHTML=`<svg class="i cr" viewBox="0 0 24 24"><use href="#ic-crown"/></svg><span><b>${esc(home.wolf)}</b> — сердце всегда открыто, но этот волк ходит один</span>`;}
+  if(boards[2])boards[2].innerHTML=home.couples.map(c=>`<div class="couple"><span class="nm">${esc(c.a)}</span><span class="heart">❤️</span><span class="nm">${esc(c.b)}</span><span class="days">${c.days} дн.</span></div>`).join("")||"<div class='note'>пар пока нет</div>";
+  // profile
+  const badgeSet=new Set(me.badges.map(b=>b.code));
+  const goal=me.goal?`<div class="pline"><span>БЛИЖАЙШИЙ ЗНАЧОК</span><b>${esc(me.goal.title)} — ${me.goal.have}/${me.goal.need}</b></div>`:"";
+  document.getElementById("pcard").innerHTML=`<h2>Профиль <span class="balance">${me.frags} ФР</span></h2>
+    <div class="card hero"><div style="font-size:20px;font-weight:700;margin-bottom:4px">${esc(me.name)}</div>
+    <div style="color:var(--amber);font-size:13px;margin-bottom:12px">${esc(me.rank)}${me.next_rank?` <span style="color:var(--mut)">· до «${esc(me.next_rank)}» ещё ${me.to_next}</span>`:""}</div>
+    <div class="pline"><span>СООБЩЕНИЙ</span><b>сегодня ${me.messages.today} · неделя ${me.messages.week} · всего ${me.messages.total}</b></div>
+    <div class="pline"><span>РОЛЬ ДНЯ</span><b>${esc(me.role)}</b></div>
+    <div class="pline"><span>ДЕНЬ РОЖДЕНИЯ</span><b>${me.birthday?esc(me.birthday):"<span style='color:var(--mut)'>не указан — /bday 21.08 в чате</span>"}</b></div>
+    <div class="pline"><span>СЕМЬЯ</span><b>${me.spouse?`💍 ${esc(me.spouse.name)} · ${me.spouse.days} дн.`:"свободен(а)"}</b></div>
+    ${goal}
+    <div class="pline"><span>ЗНАЧКИ ${me.badges.length}/${me.catalog_size}</span><b></b></div>
+    <div class="pbadges">${me.badges.map(b=>`<span title="${esc(b.hint)}">${esc(b.title)}</span>`).join("")||"<span style='color:var(--mut)'>пока ни одного</span>"}</div></div>`;
+  // ranks ladder with people, badge cards with holders and "yours"
+  const ladder=document.querySelector("#profile .card:not(.hero)");
+  if(ladder){const cls=["g","s","b"];ladder.innerHTML=home.ranks.slice().reverse().map((r,i)=>nameRow(i<3?["♛","♜","♞"][i]:"·",cls[i]||"",`${r.title} · от ${r.from}`,r.people.length?`<span style="font-weight:400;font-size:12px">${r.people.length<=2?esc(r.people.join(", ")):r.people.length+" человек"}</span>`:`<span style="font-weight:400;font-size:12px;color:var(--mut)">никого</span>`)).join("");}
+  const grid=document.querySelector("#profile .grid");
+  if(grid){grid.innerHTML=home.badges.map(b=>{const mine=badgeSet.has(b.code);const em=b.title.split(" ")[0];const nm=b.title.slice(em.length+1);
+    return `<div class="bcard ${b.holders?"":"free"}" style="${mine?"border-color:#f5c84b99":""}"><div class="em">${em}</div><div class="nm">${esc(nm)}${mine?" ✓":""}</div><div class="hint">${esc(b.hint)}</div><div class="cnt">${b.holders?"у "+b.holders+" человек":"ничей — стань первым"}</div></div>`}).join("");}
+  // shop prices
+  document.querySelectorAll("#shop .srow .spr b").forEach((el,i)=>{if(home.shop[i])el.textContent=home.shop[i].price;});
+  // polls on the main tab
+  if(home.polls.length){const poll=home.polls[0];const card=document.querySelector("#main .card:nth-of-type(3)");if(card){card.querySelector("h2 span").textContent="🗳 "+poll.question.slice(0,28);card.querySelector("h2 .pill").textContent="до "+poll.closes;
+    const rows=card.querySelectorAll(".rowline");const bars=card.querySelectorAll(".tbar");poll.options.slice(0,2).forEach((o,i)=>{if(rows[i+1]){rows[i+1].firstElementChild.textContent=o.text;rows[i+1].lastElementChild.textContent=o.votes;}
+      const total=poll.options.reduce((a,x)=>a+x.votes,0)||1;if(bars[i])bars[i].firstElementChild.style.width=Math.round(100*o.votes/total)+"%";});}}
+}
+loadLive().catch(e=>{console.log("demo mode:",e.message);document.getElementById("mode").textContent="ДЕМО";});
+
+// ---- games: one implementation, server when live, dice when demo ----
+async function play(path,body,demo){if(LIVE){const d=await api(path,{stake,...(body||{})});settle(d.frags);return d;}return demo();}
+function needStake(){if(!LIVE&&balance<stake){TF.set(100);return "Демо-фраги кончились — обнулил до 100. ";}return "";}
+
+// wheel
+const SECTORS=[2,0,5,0,1,0,20,0];let angle=0,spinning=false;
+function openWheel(){openOv("ov-wheel");const lab=document.getElementById("wlab");if(lab.childElementCount)return;
+  SECTORS.forEach((m,i)=>{const a=i*45+22.5;const sp=document.createElement("span");sp.textContent=m?"×"+m:"—";sp.style.transform=`rotate(${a}deg) translate(-50%,-92px) rotate(${-a}deg)`;lab.appendChild(sp);});}
+async function spin(){if(spinning)return;const note=needStake();spinning=true;document.getElementById("wres").textContent="Крутится…";
+  let idx,mult;try{const d=await play("/api/play/wheel",null,()=>{TF.set(balance-stake);const i=Math.floor(Math.random()*8);return {sector:i,mult:SECTORS[i],win:stake*SECTORS[i]};});idx=d.sector;mult=d.mult;
+    if(!LIVE)setTimeout(()=>TF.set(balance+d.win),4300);}catch(e){spinning=false;fail("wres",e);return;}
+  const target=360*5+(360-(idx*45+22.5));angle+=target-(angle%360);document.getElementById("wheel").style.transform=`rotate(${angle}deg)`;
+  setTimeout(()=>{spinning=false;document.getElementById("wres").innerHTML=note+(mult?`<b>×${mult}</b> — забираете ${stake*mult} фрагов!`:"<b>Мимо.</b> Ставка ушла в казну Штаба.");},4300);}
+
+// slot
 const SYM=["BAR","🍇","🍋","7️⃣"];let slotBusy=false;
 function openSlot(){openOv("ov-slot")}
-function slot(){if(slotBusy)return;const note=needStake();slotBusy=true;TF.set(TF.get()-10);
-  const res=[0,1,2].map(()=>pick(SYM));const reels=[0,1,2].map(i=>document.getElementById("r"+i));
-  reels.forEach(r=>{r.classList.remove("win");r.classList.add("spin")});
+async function slot(){if(slotBusy)return;const note=needStake();slotBusy=true;
+  let d;try{d=await play("/api/play/slot",null,()=>{TF.set(balance-stake);const reels=[0,1,2].map(()=>pick(SYM));const n=new Set(reels).size;const win=n===1?(reels[0]==="7️⃣"?stake*10:stake*3):n===2?Math.floor(stake*1.2):0;return {reels,win,label:n===1?(reels[0]==="7️⃣"?"💰 ДЖЕКПОТ 7-7-7":"✨ Три в ряд"):n===2?"🙂 Пара":"💸 Мимо"};});}catch(e){slotBusy=false;fail("sres",e);return;}
+  const reels=[0,1,2].map(i=>document.getElementById("r"+i));reels.forEach(r=>{r.classList.remove("win");r.classList.add("spin")});
   const tick=setInterval(()=>reels.forEach(r=>{if(r.classList.contains("spin"))r.textContent=pick(SYM)}),80);
-  [700,1300,1900].forEach((t,i)=>setTimeout(()=>{reels[i].classList.remove("spin");reels[i].textContent=res[i];
-    if(i===2){clearInterval(tick);const d=new Set(res).size;let m=0,label="💸 Мимо.";
-      if(d===1&&res[0]==="7️⃣"){m=10;label="💰 ДЖЕКПОТ 7-7-7!";}else if(d===1){m=3;label="✨ Три в ряд!";}else if(d===2){m=1.2;label="🙂 Пара.";}
-      const win=Math.floor(10*m);if(win)TF.set(TF.get()+win);if(m)reels.forEach(r=>r.classList.add("win"));
-      document.getElementById("sres").innerHTML=note+`<b>${label}</b> ${win?"+"+win+" фрагов":""}`;slotBusy=false;}},t));}
+  [700,1300,1900].forEach((t,i)=>setTimeout(()=>{reels[i].classList.remove("spin");reels[i].textContent=d.reels[i];
+    if(i===2){clearInterval(tick);if(d.win){reels.forEach(r=>r.classList.add("win"));if(!LIVE)TF.set(balance+d.win);}
+      document.getElementById("sres").innerHTML=note+`<b>${esc(d.label)}</b> ${d.win?"+"+d.win+" фрагов":""}`;slotBusy=false;}},t));}
 
-// ---- mines ----
+// mines
 let mines=null;
-function openMines(){openOv("ov-mines");minesDraw(true)}
-function minesDraw(idle){const g=document.getElementById("mgrid");g.innerHTML="";for(let i=0;i<25;i++){const c=document.createElement("div");c.className="cell";
-  c.onclick=()=>minesOpen(i);c.dataset.i=i;g.appendChild(c);}
-  document.getElementById("mopen").textContent="0";document.getElementById("mmult").textContent="×1.0";document.getElementById("mwin").textContent="10";}
-function minesMult(k){let m=1;for(let i=0;i<k;i++)m*= (25-i)/(20-i);return m*0.95;}
-function minesStart(){const note=needStake();TF.set(TF.get()-10);minesDraw();const set=new Set();while(set.size<5)set.add(Math.floor(Math.random()*25));
-  mines={set,open:new Set(),alive:true};document.getElementById("mres").innerHTML=note+"Поле живое. Открывайте клетки.";document.getElementById("mstart").textContent="ЗАНОВО ЗА 10";}
-function minesOpen(i){if(!mines||!mines.alive||mines.open.has(i))return;const c=document.querySelector(`.cell[data-i="${i}"]`);
-  if(mines.set.has(i)){mines.alive=false;c.classList.add("boom");c.textContent="💥";mines.set.forEach(k=>{const x=document.querySelector(`.cell[data-i="${k}"]`);x.textContent="💣";x.classList.add("boom")});
-    document.getElementById("mres").innerHTML="<b style='color:var(--red)'>БАБАХ.</b> Ставка сгорела.";return;}
-  mines.open.add(i);c.classList.add("safe");c.textContent="💎";const k=mines.open.size,m=minesMult(k);
-  document.getElementById("mopen").textContent=k;document.getElementById("mmult").textContent="×"+m.toFixed(2);document.getElementById("mwin").textContent=Math.floor(10*m);
-  if(k===20)minesCash();}
-function minesCash(){if(!mines||!mines.alive||!mines.open.size)return;const win=Math.floor(10*minesMult(mines.open.size));mines.alive=false;TF.set(TF.get()+win);
-  document.getElementById("mres").innerHTML=`<b>Забрали ${win}.</b> Нервы — тоже скилл.`;mines.set.forEach(k=>{document.querySelector(`.cell[data-i="${k}"]`).textContent="💣"});}
+function openMines(){openOv("ov-mines");minesDraw();}
+function minesDraw(){const g=document.getElementById("mgrid");g.innerHTML="";for(let i=0;i<25;i++){const c=document.createElement("div");c.className="cell";c.onclick=()=>minesOpen(i);c.dataset.i=i;g.appendChild(c);}
+  document.getElementById("mopen").textContent="0";document.getElementById("mmult").textContent="×1.0";document.getElementById("mwin").textContent=stake;}
+function minesMult(k){let m=1;for(let i=0;i<k;i++)m*=(25-i)/(20-i);return m*0.95;}
+async function minesStart(){const note=needStake();minesDraw();
+  try{if(LIVE){const d=await api("/api/mines/start",{stake});settle(d.frags);mines={alive:true,open:new Set(),set:null};}
+    else{TF.set(balance-stake);const set=new Set();while(set.size<5)set.add(Math.floor(Math.random()*25));mines={set,open:new Set(),alive:true};}}catch(e){fail("mres",e);return;}
+  document.getElementById("mres").innerHTML=note+"Поле живое. Открывайте клетки.";document.getElementById("mstart").textContent="ЗАНОВО ЗА "+stake;}
+async function minesOpen(i){if(!mines||!mines.alive||mines.open.has(i))return;const c=document.querySelector(`.cell[data-i="${i}"]`);
+  let boom,minesAt,mult,cash;
+  try{if(LIVE){const d=await api("/api/mines/open",{cell:i});boom=d.boom;minesAt=d.mines;mult=d.mult;cash=d.cash;if(d.cashed!==undefined){settle(d.frags);minesShow(d.mines);mines.alive=false;document.getElementById("mres").innerHTML=`<b>Открыли всё — ${d.cashed} ваши.</b>`;return;}if(boom)settle(d.frags);}
+    else{boom=mines.set.has(i);minesAt=[...mines.set];}}catch(e){fail("mres",e);return;}
+  if(boom){mines.alive=false;c.classList.add("boom");c.textContent="💥";minesShow(minesAt);document.getElementById("mres").innerHTML="<b style='color:var(--red)'>БАБАХ.</b> Ставка сгорела.";return;}
+  mines.open.add(i);c.classList.add("safe");c.textContent="💎";const k=mines.open.size;mult=mult||minesMult(k);cash=cash||Math.floor(stake*minesMult(k));
+  document.getElementById("mopen").textContent=k;document.getElementById("mmult").textContent="×"+(+mult).toFixed(2);document.getElementById("mwin").textContent=cash;}
+function minesShow(at){(at||[]).forEach(k=>{const x=document.querySelector(`.cell[data-i="${k}"]`);if(x&&!x.classList.contains("safe")){x.textContent="💣";x.classList.add("boom");}});}
+async function minesCash(){if(!mines||!mines.alive||!mines.open.size)return;
+  try{if(LIVE){const d=await api("/api/mines/cash");settle(d.frags);mines.alive=false;minesShow(d.mines);document.getElementById("mres").innerHTML=`<b>Забрали ${d.cashed}.</b> Нервы — тоже скилл.`;}
+    else{const win=Math.floor(stake*minesMult(mines.open.size));mines.alive=false;TF.set(balance+win);minesShow([...mines.set]);document.getElementById("mres").innerHTML=`<b>Забрали ${win}.</b> Нервы — тоже скилл.`;}}catch(e){fail("mres",e);}}
 
-// ---- blackjack ----
+// blackjack
 let bj=null;const RANKS=["A","2","3","4","5","6","7","8","9","10","J","Q","K"],SUITS=["♠","♥","♦","♣"];
-function draw(){return {r:pick(RANKS),s:pick(SUITS)}}
+function cardOf(v){return {r:v===11?"A":v===10?pick(["10","J","Q","K"]):String(v),s:pick(SUITS)}}
 function score(h){let t=0,a=0;h.forEach(c=>{if(c.r==="A"){a++;t+=11}else if("JQK".includes(c.r))t+=10;else t+=+c.r});while(t>21&&a){t-=10;a--}return t}
-function renderHand(id,h,hide){const b=document.getElementById(id);b.innerHTML="";h.forEach((c,i)=>{const d=document.createElement("div");d.className="cardf"+("♥♦".includes(c.s)?" red":"");
-  if(hide&&i===1){d.className="cardf back";d.textContent="";}else d.textContent=c.r+c.s;b.appendChild(d)});}
+function renderHand(id,h,hide){const b=document.getElementById(id);b.innerHTML="";h.forEach((c,i)=>{const d=document.createElement("div");d.className="cardf"+("♥♦".includes(c.s)?" red":"");if(hide&&i===1){d.className="cardf back";d.textContent="";}else d.textContent=c.r+c.s;b.appendChild(d)});}
 function openBj(){openOv("ov-bj")}
-function bjStart(){const note=needStake();TF.set(TF.get()-10);bj={me:[draw(),draw()],d:[draw(),draw()],over:false};bjRender(true);
-  document.getElementById("bres").innerHTML=note+"Ещё или хватит?";
-  document.getElementById("bjbtns").innerHTML='<div class="cta" onclick="bjHit()">ЕЩЁ</div><div class="cta ghost" onclick="bjStand()">ХВАТИТ</div>';
-  if(score(bj.me)===21)bjStand();}
-function bjRender(hide){renderHand("bme",bj.me);renderHand("bdealer",bj.d,hide);document.getElementById("bmsum").textContent=score(bj.me);
-  document.getElementById("bdsum").textContent=hide?"?":score(bj.d);}
-function bjHit(){if(!bj||bj.over)return;bj.me.push(draw());bjRender(true);if(score(bj.me)>21)bjEnd("Перебор. Штаб забирает ставку.",0);}
-function bjStand(){if(!bj||bj.over)return;while(score(bj.d)<17)bj.d.push(draw());const m=score(bj.me),d=score(bj.d);
-  if(d>21||m>d)bjEnd(m===21&&bj.me.length===2?"Очко с раздачи! ×2.5":"Ваша взяла! +20",m===21&&bj.me.length===2?25:20);
-  else if(m===d)bjEnd("Ничья — ставка вернулась.",10);else bjEnd("Штаб ближе к 21.",0);}
-function bjEnd(t,win){bj.over=true;bjRender(false);if(win)TF.set(TF.get()+win);document.getElementById("bres").innerHTML="<b>"+t+"</b>";
-  document.getElementById("bjbtns").innerHTML='<div class="cta" onclick="bjStart()">ЕЩЁ ПАРТИЮ ЗА 10</div>';}
+function bjBtns(over){document.getElementById("bjbtns").innerHTML=over?`<div class="cta" onclick="bjStart()">ЕЩЁ ПАРТИЮ ЗА ${stake}</div>`:'<div class="cta" onclick="bjHit()">ЕЩЁ</div><div class="cta ghost" onclick="bjStand()">ХВАТИТ</div>';}
+function bjLive(d){bj={me:d.me.map(cardOf),d:d.house.map(cardOf),over:d.over};if(!d.over)bj.d.push({r:"?",s:""});renderHand("bme",bj.me);renderHand("bdealer",bj.d,!d.over);
+  document.getElementById("bmsum").textContent=d.me_score;document.getElementById("bdsum").textContent=d.over?d.house_score:"?";
+  document.getElementById("bres").innerHTML=d.over?"<b>"+esc(d.verdict)+"</b>":(needStake()+"Ещё или хватит?");bjBtns(d.over);}
+async function bjStart(){try{if(LIVE){const d=await api("/api/bj/start",{stake});settle(d.frags);bjLive(d);return;}}catch(e){fail("bres",e);return;}
+  const note=needStake();TF.set(balance-stake);bj={me:[draw(),draw()],d:[draw(),draw()],over:false};bjRender(true);document.getElementById("bres").innerHTML=note+"Ещё или хватит?";bjBtns(false);if(score(bj.me)===21)bjStand();}
+function draw(){return {r:pick(RANKS),s:pick(SUITS)}}
+function bjRender(hide){renderHand("bme",bj.me);renderHand("bdealer",bj.d,hide);document.getElementById("bmsum").textContent=score(bj.me);document.getElementById("bdsum").textContent=hide?"?":score(bj.d);}
+async function bjHit(){if(!bj||bj.over)return;if(LIVE){try{const d=await api("/api/bj/hit");settle(d.frags);bjLive(d);}catch(e){fail("bres",e);}return;}
+  bj.me.push(draw());bjRender(true);if(score(bj.me)>21)bjEnd("Перебор. Штаб забирает ставку.",0);}
+async function bjStand(){if(!bj||bj.over)return;if(LIVE){try{const d=await api("/api/bj/stand");settle(d.frags);bjLive(d);}catch(e){fail("bres",e);}return;}
+  while(score(bj.d)<17)bj.d.push(draw());const m=score(bj.me),d=score(bj.d);
+  if(d>21||m>d)bjEnd(m===21&&bj.me.length===2?"Очко с раздачи! ×2.5":"Ваша взяла! ×2",m===21&&bj.me.length===2?Math.floor(stake*2.5):stake*2);else if(m===d)bjEnd("Ничья — ставка вернулась.",stake);else bjEnd("Штаб ближе к 21.",0);}
+function bjEnd(t,win){bj.over=true;bjRender(false);if(win)TF.set(balance+win);document.getElementById("bres").innerHTML="<b>"+t+"</b>";bjBtns(true);}
 
-// ---- coin double-or-nothing ----
+// coin
 let pot=0;
 function openCoin(){openOv("ov-coin");coinReset()}
-function coinReset(){pot=0;document.getElementById("cpot").textContent="10";document.getElementById("coin").textContent="🪙";
+function coinReset(){pot=0;document.getElementById("cpot").textContent=stake;document.getElementById("coin").textContent="🪙";
   document.getElementById("cres").textContent="Угадал сторону — банк удваивается. Дальше решай: ещё раз или забрать.";
   document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ОРЁЛ</div><div class="cta" onclick="coinFlip(1)">🔢 РЕШКА</div>';}
-function coinFlip(guess){if(pot===0){const note=needStake();TF.set(TF.get()-10);pot=10;if(note)document.getElementById("cres").textContent=note;}
-  const c=document.getElementById("coin");c.classList.remove("flip");void c.offsetWidth;c.classList.add("flip");
-  const side=Math.random()<0.5?0:1;setTimeout(()=>{c.textContent=side?"🔢":"🦅";
-    if(side===guess){pot*=2;document.getElementById("cpot").textContent=pot;
-      document.getElementById("cres").innerHTML=`<b>Угадали!</b> На кону ${pot}.${pot>=320?" Это потолок — забирайте.":""}`;
-      document.getElementById("cbtns").innerHTML=(pot>=320?"":'<div class="cta" onclick="coinFlip(0)">🦅 ЕЩЁ</div><div class="cta" onclick="coinFlip(1)">🔢 ЕЩЁ</div>')+'<div class="cta ghost" onclick="coinCash()">ЗАБРАТЬ '+pot+'</div>';}
-    else{document.getElementById("cres").innerHTML=`<b style="color:var(--red)">Мимо.</b> Банк ${pot} сгорел.`;pot=0;
-      document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinReset()">ЗАНОВО ЗА 10</div>';}},900);}
-function coinCash(){TF.set(TF.get()+pot);document.getElementById("cres").innerHTML=`<b>Забрали ${pot}.</b> Умеете вовремя выйти.`;pot=0;
-  document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinReset()">ЗАНОВО ЗА 10</div>';}
+async function coinFlip(guess){const c=document.getElementById("coin");c.classList.remove("flip");void c.offsetWidth;c.classList.add("flip");
+  let side,won,newPot,capped=false,cashed;
+  try{if(LIVE){const d=await api("/api/coin/flip",{stake,guess});side=d.side;won=d.won;newPot=d.pot;capped=d.capped;cashed=d.cashed;settle(d.frags);}
+    else{if(pot===0){needStake();TF.set(balance-stake);pot=stake;}side=Math.random()<0.5?0:1;won=side===guess;newPot=won?pot*2:0;}}catch(e){fail("cres",e);return;}
+  setTimeout(()=>{c.textContent=side?"🔢":"🦅";
+    if(won){pot=newPot;document.getElementById("cpot").textContent=pot;
+      if(capped){document.getElementById("cres").innerHTML=`<b>Потолок!</b> ${cashed} фрагов ваши.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;return;}
+      document.getElementById("cres").innerHTML=`<b>Угадали!</b> На кону ${pot}.`;
+      document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ЕЩЁ</div><div class="cta" onclick="coinFlip(1)">🔢 ЕЩЁ</div><div class="cta ghost" onclick="coinCash()">ЗАБРАТЬ '+pot+'</div>';}
+    else{document.getElementById("cres").innerHTML=`<b style="color:var(--red)">Мимо.</b> Банк ${pot||stake} сгорел.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;}},900);}
+async function coinCash(){try{if(LIVE){const d=await api("/api/coin/cash");settle(d.frags);pot=d.cashed;}else TF.set(balance+pot);}catch(e){fail("cres",e);return;}
+  document.getElementById("cres").innerHTML=`<b>Забрали ${pot}.</b> Умеете вовремя выйти.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;}
 
-// ---- dice vs the house ----
+// dice vs house
 const FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];let diceBusy=false;
 function openDice(){openOv("ov-dice")}
-function dice(){if(diceBusy)return;const note=needStake();diceBusy=true;TF.set(TF.get()-10);
+async function dice(){if(diceBusy)return;const note=needStake();diceBusy=true;
+  let d;try{d=await play("/api/play/dice",null,()=>{TF.set(balance-stake);const a=Math.floor(Math.random()*6)+1,b=Math.floor(Math.random()*6)+1;const win=a>b?stake*2:a===b?stake:0;setTimeout(()=>{if(win)TF.set(balance+win)},1100);return {me:a,house:b,win};});}catch(e){diceBusy=false;fail("dres",e);return;}
   const me=document.getElementById("dme"),bot=document.getElementById("dbot");[me,bot].forEach(e=>e.classList.add("roll"));
   const t=setInterval(()=>{me.textContent=pick(FACES);bot.textContent=pick(FACES)},90);
-  setTimeout(()=>{clearInterval(t);[me,bot].forEach(e=>e.classList.remove("roll"));const a=Math.floor(Math.random()*6),b=Math.floor(Math.random()*6);
-    me.textContent=FACES[a];bot.textContent=FACES[b];let txt;
-    if(a>b){TF.set(TF.get()+20);txt="<b>Ваша взяла!</b> +20 фрагов.";}else if(a===b){TF.set(TF.get()+10);txt="<b>Ничья.</b> Ставка вернулась.";}
-    else txt="<b>Штаб выбросил больше.</b> Ставка ушла.";document.getElementById("dres").innerHTML=note+txt;diceBusy=false;},1100);}
+  setTimeout(()=>{clearInterval(t);[me,bot].forEach(e=>e.classList.remove("roll"));me.textContent=FACES[d.me-1];bot.textContent=FACES[d.house-1];
+    document.getElementById("dres").innerHTML=note+(d.win>stake?"<b>Ваша взяла!</b> +"+d.win+" фрагов.":d.win===stake?"<b>Ничья.</b> Ставка вернулась.":"<b>Штаб выбросил больше.</b> Ставка ушла.");diceBusy=false;},1100);}
 
-// ---- rps ----
+// rps
 const RPS=["✊","✌️","✋"];
-function openRps(){openOv("ov-rps");document.getElementById("rres").textContent="Ставка 10. Выбирайте — Штаб уже выбрал.";}
-function rps(me){const bot=Math.floor(Math.random()*3);document.getElementById("rme").textContent=RPS[me];document.getElementById("rbot").textContent=RPS[bot];
-  const r=document.getElementById("rres");if(TF.get()<10){TF.set(100);}
-  if(me===bot){r.innerHTML="<b>Ничья.</b> Ставка возвращается.";return;}
-  const win=(me-bot+3)%3===1;TF.set(TF.get()+(win?10:-10));
-  r.innerHTML=win?"<b>Победа!</b> +10 фрагов, Штаб в печали.":"<b>Штаб забрал 10.</b> Машины тоже умеют выигрывать.";}
+function openRps(){openOv("ov-rps");document.getElementById("rres").textContent="Выбирайте — Штаб уже выбрал.";}
+async function rps(me){let d;try{d=await play("/api/play/rps",{pick:me},()=>{needStake();TF.set(balance-stake);const house=Math.floor(Math.random()*3);const win=me===house?stake:(me-house+3)%3===1?stake*2:0;if(win)TF.set(balance+win);return {house,win};});}catch(e){fail("rres",e);return;}
+  document.getElementById("rme").textContent=RPS[me];document.getElementById("rbot").textContent=RPS[d.house];
+  document.getElementById("rres").innerHTML=d.win>stake?"<b>Победа!</b> +"+d.win+" фрагов, Штаб в печали.":d.win===stake?"<b>Ничья.</b> Ставка возвращается.":"<b>Штаб забрал ставку.</b> Машины тоже умеют выигрывать.";}
 
-(function fit(){const b=document.getElementById("big");let size=46;b.style.fontSize=size+"px";
-while(b.scrollWidth>148&&size>26){size-=2;b.style.fontSize=size+"px";}})();
+// duels between people (live only)
+let duelTimer=null,myId=null;
+function openDuel(){openOv("ov-duel");if(!LIVE){document.getElementById("dures").innerHTML="<b>Дуэли только в Telegram</b> — открой приложение из чата.";return;}duelRefresh();duelTimer=setInterval(duelRefresh,3000);}
+async function duelRefresh(){try{const d=await api("/api/duel/list");settle(d.frags);
+  const open=document.getElementById("duopen");open.innerHTML=d.open.length?d.open.map(x=>`<div class="duelrow"><span class="who">${esc(x.challenger)}</span><span style="color:var(--amber)">${x.stake} фр</span>${x.challenger_id===myId?`<div class="cta ghost" onclick="duelCancel(${x.id})">ОТОЗВАТЬ</div>`:`<div class="cta" onclick="duelAccept(${x.id})">ПРИНЯТЬ</div>`}</div>`).join(""):"<div class='note'>пока никого — будь первым</div>";
+  const mine=document.getElementById("dumine");mine.innerHTML=d.mine.filter(x=>!x.open).length?d.mine.filter(x=>!x.open).map(x=>{const won=x.winner_id===myId;return `<div class="duelrow"><span class="who">${esc(x.challenger)} ${FACES[x.rolls[0]-1]} vs ${FACES[x.rolls[1]-1]} ${esc(x.defender)}</span><b class="${won?"up":"down"}">${won?"+":"−"}${x.stake}</b></div>`}).join(""):"<div class='note'>ещё не дрался</div>";}catch(e){fail("dures",e);}}
+async function duelCreate(){try{const d=await api("/api/duel/create",{stake});myId=d.duel.challenger_id;document.getElementById("dures").innerHTML=`<b>Вызов на ${stake} висит.</b> Ждём смелого — окно обновляется само.`;duelRefresh();}catch(e){fail("dures",e);}}
+async function duelAccept(id){try{const d=await api("/api/duel/accept",{id});settle(d.frags);const x=d.duel;myId=x.defender_id;const won=x.winner_id===myId;
+  document.getElementById("dures").innerHTML=`${esc(x.challenger)} ${FACES[x.rolls[0]-1]} vs ${FACES[x.rolls[1]-1]} ${esc(x.defender)} — <b class="${won?"up":"down"}">${won?"ваша взяла, +"+x.stake:"проиграли "+x.stake}</b>`;duelRefresh();}catch(e){fail("dures",e);}}
+async function duelCancel(id){try{await api("/api/duel/cancel",{id});duelRefresh();}catch(e){fail("dures",e);}}
+loadLive.then?0:0;
+api("/api/me").then(m=>{myId=m.id}).catch(()=>{});
+
+function fitBig(){const b=document.getElementById("big");let size=46;b.style.fontSize=size+"px";while(b.scrollWidth>148&&size>26){size-=2;b.style.fontSize=size+"px";}}
+fitBig();paint(0);
 </script>
 </body></html>
