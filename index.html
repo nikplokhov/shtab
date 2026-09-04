@@ -785,9 +785,10 @@ F</span></div>
 
 <section id="games">
   <h2>Игры в приложении <span class="pill" style="color:var(--amber);border-color:#6b5a2f;background:#302a12">ТЕСТ</span></h2>
+  <div id="invites"></div>
   <div class="testbar"><span>ТЕСТОВЫЙ БАЛАНС · фраги не настоящие до переезда</span><b id="tf">100</b></div>
   <div class="grid">
-    <div class="gcard play" style="--a:#e87d7d;grid-column:1/-1" onclick="openDuel()"><div class="em">⚔️</div><div class="nm">Дуэль 1 на 1</div><div class="hint">вызов любому в клане — кубик решает, ставка переходит победителю</div><div class="cnt" id="duelcnt">играть →</div></div>
+    <div class="gcard play" style="--a:#e87d7d;grid-column:1/-1" onclick="openCall()"><div class="em">👥</div><div class="nm">Позвать в игру</div><div class="hint">кубик · рулетка · камень-ножницы — с кем угодно из клана, победитель забирает ставки всех</div><div class="cnt">позвать →</div></div>
     <div class="gcard play" style="--a:#f5c84b" onclick="openWheel()"><div class="em">🎡</div><div class="nm">Колесо фортуны</div><div class="hint">ставка 10, до ×20</div><div class="cnt">играть →</div></div>
     <div class="gcard play" style="--a:#c08cff" onclick="openSlot()"><div class="em">🎰</div><div class="nm">Слот</div><div class="hint">7-7-7 ×10 · три в ряд ×3 · пара ×1.2</div><div class="cnt">играть →</div></div>
     <div class="gcard play" style="--a:#e87d7d" onclick="openMines()"><div class="em">💣</div><div class="nm">Минное поле</div><div class="hint">5 мин на 25 клеток, забирай вовремя</div><div class="cnt">играть →</div></div>
@@ -1065,6 +1066,32 @@ F</span></div>
     <div class="cta" onclick="pickPerson('Кого подколоть?', roastGo)">ВЫБРАТЬ ЖЕРТВУ</div></div>
 </div></div>
 
+<div class="overlay" id="ov-call"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>👥 Позвать в игру</h2><span class="balance tfv">100</span></div>
+  <div class="qcard">
+    <div class="rowline" style="margin-bottom:8px">1 · ИГРА</div>
+    <div class="btn2" id="call-games"></div>
+    <div class="rowline" style="margin:14px 0 8px">2 · КОГО ЗОВЁМ <span id="call-count" style="color:var(--green)">никого</span></div>
+    <input id="call-q" placeholder="Начни писать имя…" oninput="callFilter()"
+      style="width:100%;box-sizing:border-box;background:#0f1b2e;border:1px solid var(--line2);color:var(--txt);border-radius:12px;padding:11px 14px;font:inherit;font-size:14px;margin-bottom:8px">
+    <div id="call-list" style="max-height:220px;overflow:auto"></div>
+    <div class="rowline" style="margin:14px 0 8px">3 · СТАВКА КАЖДОГО</div>
+    <div class="stakes" data-stakes></div>
+    <div class="result" id="callres" style="min-height:0"></div>
+    <div class="cta" onclick="callGo()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>ПОЗВАТЬ</div>
+  </div>
+</div></div>
+
+<div class="overlay" id="ov-lobby"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2 id="lb-title">Игра</h2><span class="balance tfv">100</span></div>
+  <div class="qcard">
+    <div class="rowline" style="margin-bottom:10px"><span id="lb-sub"></span><b id="lb-stake"></b></div>
+    <div id="lb-people"></div>
+    <div class="result" id="lb-res" style="margin-top:12px"></div>
+    <div id="lb-actions" class="btn2"></div>
+  </div>
+</div></div>
+
 <div class="overlay" id="ov-duel"><div class="ov">
   <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>⚔️ Дуэль 1 на 1</h2><span class="balance tfv">100</span></div>
   <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
@@ -1134,7 +1161,7 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 function nameRow(place,cls,name,val,sub){return `<div class="trow"><div class="place ${cls}">${place}</div><div class="tinfo"><div class="tname">${esc(name)}</div></div><div class="tval">${val}${sub?`<small>${sub}</small>`:""}</div></div>`}
 async function loadLive(){
   const [home,me]=await Promise.all([api("/api/home"),api("/api/me")]);
-  LIVE=true;document.getElementById("mode").textContent="LIVE";document.getElementById("mode").classList.add("live");
+  LIVE=true;myId=me.id;document.getElementById("mode").textContent="LIVE";document.getElementById("mode").classList.add("live");
   document.querySelector(".testbar").innerHTML="<span>НАСТОЯЩИЕ ФРАГИ · общий кошелёк с чатом</span><b class=\"tfv\">"+me.frags+"</b>";
   balance=me.frags;tfTotal=0;paint(0);
   document.getElementById("big").textContent=home.week_messages.toLocaleString("ru-RU");fitBig();
@@ -1170,7 +1197,7 @@ async function loadLive(){
     const rows=card.querySelectorAll(".rowline");const bars=card.querySelectorAll(".tbar");poll.options.slice(0,2).forEach((o,i)=>{if(rows[i+1]){rows[i+1].firstElementChild.textContent=o.text;rows[i+1].lastElementChild.textContent=o.votes;}
       const total=poll.options.reduce((a,x)=>a+x.votes,0)||1;if(bars[i])bars[i].firstElementChild.style.width=Math.round(100*o.votes/total)+"%";});}}
 }
-loadLive().catch(e=>{console.log("demo mode:",e.message);document.getElementById("mode").textContent="ДЕМО";});
+loadLive().then(afterLive).catch(e=>{console.log("demo mode:",e.message);document.getElementById("mode").textContent="ДЕМО";});
 
 // ---- games: one implementation, server when live, dice when demo ----
 async function play(path,body,demo){if(LIVE){const d=await api(path,{stake,...(body||{})});settle(d.frags);return d;}return demo();}
@@ -1324,6 +1351,57 @@ duelRefresh=async function(){try{const d=await api("/api/duel/list");settle(d.fr
     return `<div class="duelrow" style="${forMe?'background:#12301f;border-radius:12px;padding:10px':''}"><span class="who">${esc(x.challenger)}${x.target?` <span style="color:var(--mut)">→ ${esc(x.target)}</span>`:""}${forMe?' <b class="up">тебя зовут!</b>':''}</span><span style="color:var(--amber)">${x.stake} фр</span>${mine?`<div class="cta ghost" onclick="duelCancel(${x.id})">ОТОЗВАТЬ</div>`:(x.target_id&&!forMe)?'':`<div class="cta" onclick="duelAccept(${x.id})">ПРИНЯТЬ</div>`}</div>`}).join(""):"<div class='note'>пока никого — будь первым</div>";
   const done=d.mine.filter(x=>!x.open);const mine=document.getElementById("dumine");mine.innerHTML=done.length?done.map(x=>{const won=x.winner_id===myId;return `<div class="duelrow"><span class="who">${esc(x.challenger)} ${FACES[x.rolls[0]-1]} vs ${FACES[x.rolls[1]-1]} ${esc(x.defender)}</span><b class="${won?"up":"down"}">${won?"+":"−"}${x.stake}</b></div>`}).join(""):"<div class='note'>ещё не дрался</div>";}catch(e){fail("dures",e);}};
 try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("duel_")){setTimeout(()=>{openDuel();},600);}}catch(e){}
+
+// ---- call wizard ----
+let callGame="dice", callPicked=new Set(), GAMES_META=null;
+async function openCall(){if(!LIVE){alert("Звать людей можно только в Telegram — открой приложение из чата.");return;}
+  openOv("ov-call");callPicked=new Set();document.getElementById("callres").textContent="";document.getElementById("call-q").value="";
+  try{if(!PEOPLE)PEOPLE=(await api("/api/members")).members;if(!GAMES_META)GAMES_META=(await api("/api/lobby/list")).games;}catch(e){fail("callres",e);return;}
+  renderCallGames();callFilter();}
+function renderCallGames(){document.getElementById("call-games").innerHTML=GAMES_META.map(g=>`<div class="cta ${g.code===callGame?'':'ghost'}" style="padding:12px 6px" onclick="callGame='${g.code}';renderCallGames();callFilter()">${g.icon} ${esc(g.title)}</div>`).join("");}
+function callFilter(){const q=(document.getElementById("call-q").value||"").toLowerCase();const max=(GAMES_META.find(g=>g.code===callGame)||{max:8}).max-1;
+  const list=(PEOPLE||[]).filter(p=>p.name.toLowerCase().includes(q)).slice(0,40);
+  document.getElementById("call-list").innerHTML=list.map(p=>`<div class="duelrow" onclick="callToggle(${p.id},${max})"><span class="who">${esc(p.name)}</span><span style="font-size:18px">${callPicked.has(p.id)?"✅":"○"}</span></div>`).join("")||"<div class='note'>никого не нашёл</div>";
+  document.getElementById("call-count").textContent=callPicked.size?`${callPicked.size} чел. (до ${max})`:"никого";}
+function callToggle(id,max){if(callPicked.has(id))callPicked.delete(id);else{if(callPicked.size>=max){alert("В эту игру больше не влезет.");return;}callPicked.add(id);}callFilter();}
+async function callGo(){if(!callPicked.size){document.getElementById("callres").innerHTML="<b>Отметь хотя бы одного.</b>";return;}
+  try{const d=await api("/api/lobby/create",{game:callGame,stake,invited:[...callPicked]});openLobby(d.lobby.id);}catch(e){fail("callres",e);}}
+
+// ---- lobby screen ----
+let lobbyId=null,lobbyTimer=null,lastState=null;
+async function openLobby(id){lobbyId=id;openOv("ov-lobby");clearInterval(lobbyTimer);await lobbyRefresh();lobbyTimer=setInterval(lobbyRefresh,2500);}
+function lobbyStop(){clearInterval(lobbyTimer);lobbyTimer=null;}
+const _closeOv=closeOv;closeOv=function(){_closeOv();lobbyStop();};
+async function lobbyRefresh(){if(!lobbyId)return;let lb;try{const d=await api("/api/lobby/get?id="+lobbyId);settle(d.frags);lb=d.lobby;}catch(e){fail("lb-res",e);lobbyStop();return;}
+  document.getElementById("lb-title").textContent=`${lb.icon} ${lb.title}`;
+  document.getElementById("lb-sub").textContent=lb.state==="open"?`ЗОВЁТ ${lb.host.toUpperCase()}`:lb.state==="done"?"СЫГРАНО":"ОТМЕНЕНО";
+  document.getElementById("lb-stake").textContent=`${lb.stake} ФР С КАЖДОГО`;
+  const res=lb.result||{};
+  document.getElementById("lb-people").innerHTML=lb.people.map(p=>{let tail="";
+    if(lb.state==="done"){if(res.rolls&&res.rolls[p.id]!==undefined)tail=FACES[res.rolls[p.id]-1];else if(res.order){const i=res.order.indexOf(p.id);tail=i<0?"🏆":"💀 "+(i+1);}else if(res.picks&&res.picks[p.id])tail=res.picks[p.id];
+      if(p.id===res.winner)tail+=" 🏆";}
+    else tail=p.ready?(lb.game==="rps"&&p.picked?"✅ выбрал":"✅ готов"):"⏳ ждём";
+    return `<div class="duelrow"><span class="who">${esc(p.name)}${p.id===lb.host_id?' <span style="color:var(--mut)">· зовёт</span>':''}</span><b>${tail}</b></div>`}).join("");
+  const box=document.getElementById("lb-actions");const r=document.getElementById("lb-res");
+  if(lb.state==="done"){lobbyStop();const won=res.winner===myId;const pot=lb.stake*(lb.people.filter(p=>p.ready).length-1);
+    r.innerHTML=won?`<b class="up">Ты забрал ${pot} фрагов!</b>`:`<b>Победил ${esc((lb.people.find(p=>p.id===res.winner)||{}).name||"кто-то")}.</b>${lb.you_ready?` <span class="down">−${lb.stake}</span>`:""}`;
+    box.innerHTML='<div class="cta" onclick="closeOv();openCall()">ЕЩЁ РАЗ</div>';return;}
+  if(lb.state==="cancelled"){lobbyStop();r.innerHTML="<b>Игра отменена.</b>";box.innerHTML='<div class="cta ghost" onclick="closeOv()">ЗАКРЫТЬ</div>';return;}
+  const ready=lb.people.filter(p=>p.ready).length;
+  if(!lb.you_in){r.textContent="В эту игру звали не тебя — но можешь посмотреть.";box.innerHTML="";return;}
+  if(!lb.you_ready){r.innerHTML=`Тебя зовут в <b>${esc(lb.title)}</b> на ${lb.stake}. Готов?`;box.innerHTML=`<div class="cta" onclick="lobbyAct('ready')">Я ГОТОВ</div><div class="cta ghost" onclick="lobbyAct('leave')">НЕТ</div>`;return;}
+  if(lb.game==="rps"){if(res.tie)r.innerHTML=`<b>Ничья ${res.tie.join(" ")}</b> — ещё раз.`;else r.textContent=lb.people.find(p=>p.id===myId&&p.picked)?"Ждём выбор соперника…":"Выбирай — соперник не увидит.";
+    box.innerHTML=ready<2?'<div class="note">ждём второго…</div>':RPS.map((e,i)=>`<div class="cta" style="font-size:26px;padding:10px" onclick="lobbyAct('pick',{pick:${i}})">${e}</div>`).join("")+(lb.you_host?'':'');
+    if(lb.you_host)box.innerHTML+=`<div class="cta ghost" onclick="lobbyAct('leave')">ОТМЕНИТЬ</div>`;return;}
+  r.innerHTML=`Готовы ${ready} из ${lb.people.length}. ${lb.you_host?(lb.can_start?"Можно начинать.":"Ждём хотя бы "+lb.min+" готовых."):"Ждём, когда "+esc(lb.host)+" нажмёт «Начать»."}`;
+  box.innerHTML=(lb.you_host?`<div class="cta ${lb.can_start?'':'ghost'}" onclick="${lb.can_start?"lobbyAct('start')":"void 0"}">НАЧАТЬ</div><div class="cta ghost" onclick="lobbyAct('leave')">ОТМЕНИТЬ</div>`:`<div class="cta ghost" onclick="lobbyAct('leave')">ВЫЙТИ</div>`);}
+async function lobbyAct(action,extra){try{const d=await api("/api/lobby/"+action,{id:lobbyId,...(extra||{})});settle(d.frags);if(action==="leave"&&!d.lobby.you_host){closeOv();return;}await lobbyRefresh();}catch(e){fail("lb-res",e);}}
+
+// ---- invites banner on the games tab ----
+async function invitesRefresh(){if(!LIVE)return;try{const d=await api("/api/lobby/list");const mine=d.invites;const box=document.getElementById("invites");
+  box.innerHTML=mine.map(lb=>`<div class="wolf" style="border-color:#2f6b40;cursor:pointer" onclick="openLobby(${lb.id})"><span style="font-size:22px">${lb.icon}</span><span><b>${lb.you_host?"Твоя игра":"Тебя зовут"}:</b> ${esc(lb.host)} · ${esc(lb.title)} · ${lb.stake} фр <span style="color:var(--green)">→ зайти</span></span></div>`).join("");}catch(e){}}
+setInterval(invitesRefresh,5000);
+function afterLive(){invitesRefresh();try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("lobby_"))openLobby(+sp.slice(6));}catch(e){}}
 
 function fitBig(){const b=document.getElementById("big");let size=46;b.style.fontSize=size+"px";while(b.scrollWidth>148&&size>26){size-=2;b.style.fontSize=size+"px";}}
 fitBig();paint(0);
