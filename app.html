@@ -150,8 +150,11 @@ border:1px solid #6b5a2f99;border-radius:16px;padding:11px 14px;margin-bottom:12
 .gcard.play .cnt{color:var(--green)}
 .overlay{position:fixed;inset:0;z-index:20;background:rgba(6,12,22,.985);display:none;overflow:auto;padding:14px 14px 40px}
 .overlay.on{display:block}
+.booting #tops,.booting #profile,.booting #shop .srow,.booting #admin .srow{visibility:hidden}
 #ov-pick{z-index:30}
-#act-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+#act-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.gchip{padding:12px 8px;border-radius:14px;border:1px solid #2f6b40;background:#12301f;color:var(--green);font-size:13px;font-weight:600;letter-spacing:0;text-align:center;display:flex;align-items:center;justify-content:center;min-height:46px;line-height:1.25;cursor:pointer}
+.gchip:active{background:#1a4a2c}
 .ov{max-width:430px;margin:0 auto}
 .ovhead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .back{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#132238;
@@ -962,11 +965,11 @@ F</span></div>
   <div class="srow" id="quietrow" onclick="go(BOT+'?start=quiet')"><div class="sic">🤫</div>
     <div class="sinfo"><div class="snm">Тихий час</div><div class="sds">включить или выключить — в личке бота</div></div>
     <div class="go">›</div></div>
-  <div class="srow" onclick="go(BOT+'?start=roster')"><div class="sic">👥</div>
+  <div class="srow" onclick="openRoster()"><div class="sic">👥</div>
     <div class="sinfo"><div class="snm">Движение состава</div>
     <div class="sds" id="rosterline">за неделю: <b class="up">+14 пришли</b> · <b class="down">−7 вышли</b> · в клане 66</div></div>
     <div class="go">›</div></div>
-  <div class="srow" onclick="go(BOT+'?start=inactive')"><div class="sic">🪦</div>
+  <div class="srow" onclick="openInactive()"><div class="sic">🪦</div>
     <div class="sinfo"><div class="snm">Неактивные</div><div class="sds">радар молчунов за 14 дней</div></div>
     <div class="go">›</div></div>
 </section>
@@ -979,8 +982,8 @@ F</span></div>
   <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
   <div class="stakes" data-stakes></div>
   <div class="wheelwrap"><div class="pin"></div><div class="wheel" id="wheel"><div class="wlab" id="wlab"></div></div></div>
-  <div class="result" id="wres">Ставка 10 фрагов. Крути — сектор решает.</div>
-  <div class="cta" onclick="spin()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>КРУТИТЬ ЗА 10</div>
+  <div class="result" id="wres">Крути — сектор решает.</div>
+  <div class="cta" onclick="spin()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg><span class="stakelbl" data-verb="КРУТИТЬ">КРУТИТЬ ЗА 10</span></div>
 </div></div>
 
   <div class="result" id="qres"></div>
@@ -993,8 +996,8 @@ F</span></div>
   <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
   <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="reels"><div class="reel" id="r0">7️⃣</div><div class="reel" id="r1">🍇</div><div class="reel" id="r2">🍋</div></div>
-    <div class="result" id="sres">Ставка 10. 7-7-7 — ×10, три в ряд — ×3, пара — ×1.2.</div>
-    <div class="cta" onclick="slot()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>КРУТИТЬ ЗА 10</div></div>
+    <div class="result" id="sres">7-7-7 — ×10, три в ряд — ×3, пара — ×1.2.</div>
+    <div class="cta" onclick="slot()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg><span class="stakelbl" data-verb="КРУТИТЬ">КРУТИТЬ ЗА 10</span></div></div>
 </div></div>
 
 <div class="overlay" id="ov-mines"><div class="ov">
@@ -1003,8 +1006,8 @@ F</span></div>
   <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="mult"><span>ОТКРЫТО <b id="mopen" style="font-size:13px;color:var(--txt)">0</b></span><span>МНОЖИТЕЛЬ <b id="mmult">×1.0</b></span><span>ЗАБРАТЬ <b id="mwin">10</b></span></div>
     <div class="mines" id="mgrid"></div>
-    <div class="result" id="mres">Ставка 10. Под пятью клетками мины. Каждая безопасная — множитель растёт.</div>
-    <div class="btn2"><div class="cta" id="mstart" onclick="minesStart()">НАЧАТЬ ЗА 10</div><div class="cta ghost" onclick="minesCash()">ЗАБРАТЬ</div></div></div>
+    <div class="result" id="mres">Под пятью клетками мины. Каждая безопасная — множитель растёт.</div>
+    <div class="btn2"><div class="cta" id="mstart" onclick="minesStart()"><span class="stakelbl" data-verb="НАЧАТЬ">НАЧАТЬ ЗА 10</span></div><div class="cta ghost" onclick="minesCash()">ЗАБРАТЬ</div></div></div>
 </div></div>
 
 <div class="overlay" id="ov-bj"><div class="ov">
@@ -1014,8 +1017,8 @@ F</span></div>
   <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="hlabel"><span>ШТАБ</span><b id="bdsum">—</b></div><div class="hand" id="bdealer"></div>
     <div class="hlabel"><span>ВЫ</span><b id="bmsum">—</b></div><div class="hand" id="bme"></div>
-    <div class="result" id="bres">Ставка 10. Ближе к 21 — забираете 20, перебор — ноль.</div>
-    <div class="btn2" id="bjbtns"><div class="cta" onclick="bjStart()">СДАТЬ ЗА 10</div></div></div>
+    <div class="result" id="bres">Ближе к 21 — забираете 20, перебор — ноль.</div>
+    <div class="btn2" id="bjbtns"><div class="cta" onclick="bjStart()"><span class="stakelbl" data-verb="СДАТЬ">СДАТЬ ЗА 10</span></div></div></div>
 </div></div>
 
 <div class="overlay" id="ov-coin"><div class="ov">
@@ -1034,8 +1037,8 @@ F</span></div>
   <div class="wallet"><span>КОШЕЛЁК <b class="tfv">100</b></span><span>ПОСЛЕДНЯЯ <span class="d tfd">—</span></span><span>ИТОГО <span class="d tft">0</span></span></div>
   <div class="stakes" data-stakes></div>
   <div class="qcard"><div class="dicebox"><div><span id="dme">⚄</span><small>ВЫ</small></div><div style="font-size:16px;color:var(--mut)">VS</div><div><span id="dbot">⚂</span><small>ШТАБ</small></div></div>
-    <div class="result" id="dres">Ставка 10. У кого больше — тот забирает 20. Ничья — возврат.</div>
-    <div class="cta" onclick="dice()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg>БРОСИТЬ ЗА 10</div></div>
+    <div class="result" id="dres">У кого больше — тот забирает 20. Ничья — возврат.</div>
+    <div class="cta" onclick="dice()"><svg class="i" viewBox="0 0 24 24"><use href="#ic-zap"/></svg><span class="stakelbl" data-verb="БРОСИТЬ">БРОСИТЬ ЗА 10</span></div></div>
 </div></div>
 
 <div class="overlay" id="ov-pick"><div class="ov">
@@ -1050,6 +1053,21 @@ F</span></div>
   <div class="qcard"><div class="result">Символ рядом с именем везде на 7 дней. Выберите свой:</div>
     <div class="grid" id="marks" style="grid-template-columns:repeat(4,1fr)"></div>
     <div class="result" id="markres"></div></div>
+</div></div>
+
+<div class="overlay" id="ov-roster"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>👥 Движение состава</h2></div>
+  <div class="qcard"><div class="rowline" style="margin-bottom:8px"><span>ЗА 30 ДНЕЙ</span><b id="roster-sum"></b></div>
+    <div class="rowline" style="margin:12px 0 6px"><span>УШЛИ</span><b class="down" id="roster-left-n"></b></div><div id="roster-left"></div>
+    <div class="rowline" style="margin:14px 0 6px"><span>ПРИШЛИ</span><b class="up" id="roster-joined-n"></b></div><div id="roster-joined"></div>
+    <div class="result" id="rosterres" style="min-height:0"></div></div>
+</div></div>
+
+<div class="overlay" id="ov-inactive"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🪦 Неактивные</h2></div>
+  <div class="qcard"><div class="rowline" style="margin-bottom:8px"><span>БЕЗ СООБЩЕНИЙ 14 ДНЕЙ</span><b id="inactive-n"></b></div>
+    <div id="inactive-list"></div>
+    <div class="result" id="inactiveres" style="min-height:0"></div></div>
 </div></div>
 
 <div class="overlay" id="ov-act"><div class="ov">
@@ -1111,7 +1129,7 @@ F</span></div>
   <div class="stakes" data-stakes></div>
   <div class="qcard">
     <div class="duel"><div><span id="rme">❔</span><small>ВЫ</small></div><div style="font-size:16px;color:var(--mut)">VS</div><div><span id="rbot">🤖</span><small>ШТАБ</small></div></div>
-    <div class="result" id="rres">Ставка 10. Выбирайте — Штаб уже выбрал.</div>
+    <div class="result" id="rres">Выбирайте — Штаб уже выбрал.</div>
     <div class="rps"><button onclick="rps(0)">✊</button><button onclick="rps(1)">✌️</button><button onclick="rps(2)">✋</button></div>
   </div>
 </div></div>
@@ -1152,8 +1170,11 @@ function paint(d){document.querySelectorAll("#tf,.tfv").forEach(el=>el.textConte
   document.querySelectorAll(".tft").forEach(el=>{el.textContent=(tfTotal>0?"+":"")+tfTotal;el.style.color=tfTotal>0?"var(--green)":tfTotal<0?"var(--red)":"var(--mut)";});}
 function settle(frags){if(typeof frags==="number")TF.set(frags);}
 let stake=10;
-document.querySelectorAll("[data-stakes]").forEach(box=>{[10,25,50,100].forEach(v=>{const sp=document.createElement("span");sp.textContent=v;sp.className=v===stake?"on":"";
-  sp.onclick=()=>{stake=v;document.querySelectorAll("[data-stakes] span").forEach(x=>x.classList.toggle("on",+x.textContent===v));};box.appendChild(sp);});});
+document.querySelectorAll("[data-stakes]").forEach(box=>{[0,10,25,50,100].forEach(v=>{const sp=document.createElement("span");sp.textContent=v;sp.className=v===stake?"on":"";
+  sp.onclick=()=>{stake=v;document.querySelectorAll("[data-stakes] span").forEach(x=>x.classList.toggle("on",+x.textContent===v));paintStake();};box.appendChild(sp);});});
+function forStake(){return stake?"ЗА "+stake:"ПРОСТО ТАК"}
+function plus(n){return stake?`+${n} в кошелёк`:"играли просто так"}
+function paintStake(){document.querySelectorAll(".stakelbl").forEach(el=>el.textContent=el.dataset.verb+" "+forStake());}
 function fail(id,e){document.getElementById(id).innerHTML="<b style='color:var(--red)'>"+esc(e.message||e)+"</b>";}
 function openOv(id){document.getElementById(id).classList.add("on");window.scrollTo(0,0)}
 function closeOv(){document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("on"));clearInterval(duelTimer);}
@@ -1193,6 +1214,7 @@ async function loadLive(){
   document.getElementById("quietrow").style.display=me.owner?"":"none";
   document.querySelector("#admin h2 .pill").textContent=me.owner?"ВЛАДЕЛЕЦ":"АДМИН";
   document.getElementById("rosterline").innerHTML=`за неделю: <b class="up">+${home.roster.joined} пришли</b> · <b class="down">−${home.roster.left} вышли</b> · в клане ${home.members}`;
+  document.body.classList.remove("booting");
   document.getElementById("ownerrow").innerHTML=`<span style="font-size:20px">👑</span><span><b>${esc(home.owner||"владелец")}</b> · ${esc(home.owner_rank)} — звание только у владельца</span>`;
   const titles=home.ranks.map(r=>r.title),at=titles.indexOf(me.rank),ahead=at>=0?titles.slice(at+1):[];
   document.getElementById("ranknote").textContent=ahead.length?"впереди ещё: "+ahead.join(" · "):at>=0?"выше некуда — вершина лестницы":"звание вне лестницы";
@@ -1224,7 +1246,6 @@ async function loadLive(){
       +poll.options.map((o,i)=>`<div class="rowline"${i?' style="margin-top:9px"':''}><span>${esc(o.text)}${o.mine?' <span style="color:var(--green)">· твой голос</span>':''}</span><b class="${i?'':'up'}">${o.votes}</b></div><div class="tbar"><i style="width:${Math.round(100*o.votes/total)}%${i?';background:#4a5d78':''}"></i></div>`).join("")
       +`<div class="cta" style="margin:12px 0 0;padding:12px" onclick="go('${poll.link}')">${poll.options.some(o=>o.mine)?"ПЕРЕГОЛОСОВАТЬ В ТЕМЕ":"ГОЛОСОВАТЬ В ТЕМЕ"}</div>`;}
 }
-loadLive().then(afterLive).catch(e=>{console.log("demo mode:",e.message);document.getElementById("mode").textContent="ДЕМО";});
 
 // ---- games: one implementation, server when live, dice when demo ----
 async function play(path,body,demo){if(LIVE){const d=await api(path,{stake,...(body||{})});settle(d.frags);return d;}return demo();}
@@ -1238,7 +1259,7 @@ async function spin(){if(spinning)return;const note=needStake();spinning=true;do
   let idx,mult;try{const d=await play("/api/play/wheel",null,()=>{TF.set(balance-stake);const i=Math.floor(Math.random()*8);return {sector:i,mult:SECTORS[i],win:stake*SECTORS[i]};});idx=d.sector;mult=d.mult;
     if(!LIVE)setTimeout(()=>TF.set(balance+d.win),4300);}catch(e){spinning=false;fail("wres",e);return;}
   const target=360*5+(360-(idx*45+22.5));angle+=target-(angle%360);document.getElementById("wheel").style.transform=`rotate(${angle}deg)`;
-  setTimeout(()=>{spinning=false;document.getElementById("wres").innerHTML=note+(mult>1?`<b>×${mult}</b> — +${stake*mult-stake} в кошелёк!`:mult?"<b>×1</b> — ставка вернулась.":"<b>Мимо.</b> Ставка ушла в казну Штаба.");},4300);}
+  setTimeout(()=>{spinning=false;document.getElementById("wres").innerHTML=note+(mult>1?`<b>×${mult}</b> — ${plus(stake*mult-stake)}!`:mult?"<b>×1</b> — ставка вернулась.":"<b>Мимо.</b>"+(stake?" Ставка ушла в казну Штаба.":""));},4300);}
 
 // slot
 const SYM=["BAR","🍇","🍋","7️⃣"];let slotBusy=false;
@@ -1249,31 +1270,31 @@ async function slot(){if(slotBusy)return;const note=needStake();slotBusy=true;
   const tick=setInterval(()=>reels.forEach(r=>{if(r.classList.contains("spin"))r.textContent=pick(SYM)}),80);
   [700,1300,1900].forEach((t,i)=>setTimeout(()=>{reels[i].classList.remove("spin");reels[i].textContent=d.reels[i];
     if(i===2){clearInterval(tick);if(d.win){reels.forEach(r=>r.classList.add("win"));if(!LIVE)TF.set(balance+d.win);}
-      document.getElementById("sres").innerHTML=note+`<b>${esc(d.label)}</b> ${d.win>stake?"+"+(d.win-stake)+" в кошелёк":d.win?"ставка вернулась":""}`;slotBusy=false;}},t));}
+      document.getElementById("sres").innerHTML=note+`<b>${esc(d.label)}</b> ${d.win>stake?plus(d.win-stake):d.win?"ставка вернулась":""}`;slotBusy=false;}},t));}
 
 // mines
 let mines=null;
 async function openMines(){openOv("ov-mines");minesDraw();const r=await restoreRounds();if(r&&r.mines){const f=r.mines;mines={alive:true,open:new Set(f.opened),set:null};
   f.opened.forEach(i=>{const c=document.querySelector(`.cell[data-i="${i}"]`);if(c){c.classList.add("safe");c.textContent="💎";}});
   document.getElementById("mopen").textContent=f.opened.length;document.getElementById("mmult").textContent="×"+(+f.mult).toFixed(2);document.getElementById("mwin").textContent=f.cash;
-  document.getElementById("mres").innerHTML="<b>Поле ждёт.</b> Открывайте дальше или забирайте.";document.getElementById("mstart").textContent="ЗАНОВО ЗА "+stake;}}
+  document.getElementById("mres").innerHTML="<b>Поле ждёт.</b> Открывайте дальше или забирайте.";document.getElementById("mstart").textContent="ЗАНОВО "+forStake();}}
 function minesDraw(){const g=document.getElementById("mgrid");g.innerHTML="";for(let i=0;i<25;i++){const c=document.createElement("div");c.className="cell";c.onclick=()=>minesOpen(i);c.dataset.i=i;g.appendChild(c);}
-  document.getElementById("mopen").textContent="0";document.getElementById("mmult").textContent="×1.0";document.getElementById("mwin").textContent=stake;}
+  document.getElementById("mopen").textContent="0";document.getElementById("mmult").textContent="×1.0";document.getElementById("mwin").textContent=stake||"—";}
 function minesMult(k){let m=1;for(let i=0;i<k;i++)m*=(25-i)/(20-i);return m*0.95;}
 async function minesStart(){const note=needStake();minesDraw();
   let settledNote="";try{if(LIVE){const d=await api("/api/mines/start",{stake});settle(d.frags);mines={alive:true,open:new Set(),set:null};if(d.settled)settledNote=`Прошлое поле закрыто: +${d.settled}. `;}
     else{TF.set(balance-stake);const set=new Set();while(set.size<5)set.add(Math.floor(Math.random()*25));mines={set,open:new Set(),alive:true};}}catch(e){fail("mres",e);return;}
-  document.getElementById("mres").innerHTML=note+settledNote+"Поле живое. Открывайте клетки.";document.getElementById("mstart").textContent="ЗАНОВО ЗА "+stake;}
+  document.getElementById("mres").innerHTML=note+settledNote+"Поле живое. Открывайте клетки.";document.getElementById("mstart").textContent="ЗАНОВО "+forStake();}
 async function minesOpen(i){if(!mines||!mines.alive||mines.open.has(i))return;const c=document.querySelector(`.cell[data-i="${i}"]`);
   let boom,minesAt,mult,cash;
-  try{if(LIVE){const d=await api("/api/mines/open",{cell:i});boom=d.boom;minesAt=d.mines;mult=d.mult;cash=d.cash;if(d.cashed!==undefined){settle(d.frags);minesShow(d.mines);mines.alive=false;document.getElementById("mres").innerHTML=`<b>Открыли всё — ${d.cashed} ваши.</b>`;return;}if(boom)settle(d.frags);}
+  try{if(LIVE){const d=await api("/api/mines/open",{cell:i});boom=d.boom;minesAt=d.mines;mult=d.mult;cash=d.cash;if(d.cashed!==undefined){settle(d.frags);minesShow(d.mines);mines.alive=false;document.getElementById("mres").innerHTML=d.cashed?`<b>Открыли всё — ${d.cashed} ваши.</b>`:"<b>Открыли всё.</b> Играли просто так.";return;}if(boom)settle(d.frags);}
     else{boom=mines.set.has(i);minesAt=[...mines.set];}}catch(e){fail("mres",e);return;}
   if(boom){mines.alive=false;c.classList.add("boom");c.textContent="💥";minesShow(minesAt);document.getElementById("mres").innerHTML="<b style='color:var(--red)'>БАБАХ.</b> Ставка сгорела.";return;}
   mines.open.add(i);c.classList.add("safe");c.textContent="💎";const k=mines.open.size;mult=mult||minesMult(k);cash=cash||Math.floor(stake*minesMult(k));
   document.getElementById("mopen").textContent=k;document.getElementById("mmult").textContent="×"+(+mult).toFixed(2);document.getElementById("mwin").textContent=cash;}
 function minesShow(at){(at||[]).forEach(k=>{const x=document.querySelector(`.cell[data-i="${k}"]`);if(x&&!x.classList.contains("safe")){x.textContent="💣";x.classList.add("boom");}});}
 async function minesCash(){if(!mines||!mines.alive||!mines.open.size)return;
-  try{if(LIVE){const d=await api("/api/mines/cash",{});settle(d.frags);mines.alive=false;minesShow(d.mines);document.getElementById("mres").innerHTML=`<b>Забрали ${d.cashed}.</b> Нервы — тоже скилл.`;}
+  try{if(LIVE){const d=await api("/api/mines/cash",{});settle(d.frags);mines.alive=false;minesShow(d.mines);document.getElementById("mres").innerHTML=d.cashed?`<b>Забрали ${d.cashed}.</b> Нервы — тоже скилл.`:"<b>Вышли живым.</b> Играли просто так.";}
     else{const win=Math.floor(stake*minesMult(mines.open.size));mines.alive=false;TF.set(balance+win);minesShow([...mines.set]);document.getElementById("mres").innerHTML=`<b>Забрали ${win}.</b> Нервы — тоже скилл.`;}}catch(e){fail("mres",e);}}
 
 // blackjack
@@ -1282,7 +1303,7 @@ function cardOf(v){return {r:v===11?"A":v===10?pick(["10","J","Q","K"]):String(v
 function score(h){let t=0,a=0;h.forEach(c=>{if(c.r==="A"){a++;t+=11}else if("JQK".includes(c.r))t+=10;else t+=+c.r});while(t>21&&a){t-=10;a--}return t}
 function renderHand(id,h,hide){const b=document.getElementById(id);b.innerHTML="";h.forEach((c,i)=>{const d=document.createElement("div");d.className="cardf"+("♥♦".includes(c.s)?" red":"");if(hide&&i===1){d.className="cardf back";d.textContent="";}else d.textContent=c.r+c.s;b.appendChild(d)});}
 async function openBj(){openOv("ov-bj");const r=await restoreRounds();if(r&&r.bj)bjLive({...r.bj,over:false});}
-function bjBtns(over){document.getElementById("bjbtns").innerHTML=over?`<div class="cta" onclick="bjStart()">ЕЩЁ ПАРТИЮ ЗА ${stake}</div>`:'<div class="cta" onclick="bjHit()">ЕЩЁ</div><div class="cta ghost" onclick="bjStand()">ХВАТИТ</div>';}
+function bjBtns(over){document.getElementById("bjbtns").innerHTML=over?`<div class="cta" onclick="bjStart()">ЕЩЁ ПАРТИЮ ${forStake()}</div>`:'<div class="cta" onclick="bjHit()">ЕЩЁ</div><div class="cta ghost" onclick="bjStand()">ХВАТИТ</div>';}
 function bjLive(d){bj={me:d.me.map(cardOf),d:d.house.map(cardOf),over:d.over};if(!d.over)bj.d.push({r:"?",s:""});renderHand("bme",bj.me);renderHand("bdealer",bj.d,!d.over);
   document.getElementById("bmsum").textContent=d.me_score;document.getElementById("bdsum").textContent=d.over?d.house_score:"?";
   document.getElementById("bres").innerHTML=d.over?"<b>"+esc(d.verdict)+"</b>":(needStake()+"Ещё или хватит?");bjBtns(d.over);}
@@ -1303,7 +1324,7 @@ async function restoreRounds(){if(!LIVE)return null;try{return await api("/api/r
 async function openCoin(){openOv("ov-coin");coinReset();const r=await restoreRounds();if(r&&r.coin){pot=r.coin.pot;document.getElementById("cpot").textContent=pot;
   document.getElementById("cres").innerHTML=`<b>Банк ждёт: ${pot}.</b> Ещё раз или забрать?`;
   document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ЕЩЁ</div><div class="cta" onclick="coinFlip(1)">🔢 ЕЩЁ</div><div class="cta ghost" onclick="coinCash()">ЗАБРАТЬ '+pot+'</div>';}}
-function coinReset(){pot=0;document.getElementById("cpot").textContent=stake;document.getElementById("coin").textContent="🪙";
+function coinReset(){pot=0;document.getElementById("cpot").textContent=stake||"—";document.getElementById("coin").textContent="🪙";
   document.getElementById("cres").textContent="Угадал сторону — банк удваивается. Дальше решай: ещё раз или забрать.";
   document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ОРЁЛ</div><div class="cta" onclick="coinFlip(1)">🔢 РЕШКА</div>';}
 async function coinFlip(guess){const c=document.getElementById("coin");c.classList.remove("flip");void c.offsetWidth;c.classList.add("flip");
@@ -1312,12 +1333,12 @@ async function coinFlip(guess){const c=document.getElementById("coin");c.classLi
     else{if(pot===0){needStake();TF.set(balance-stake);pot=stake;}side=Math.random()<0.5?0:1;won=side===guess;newPot=won?pot*2:0;}}catch(e){fail("cres",e);return;}
   setTimeout(()=>{c.textContent=side?"🔢":"🦅";
     if(won){pot=newPot;document.getElementById("cpot").textContent=pot;
-      if(capped){document.getElementById("cres").innerHTML=`<b>Потолок!</b> ${cashed} фрагов ваши.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;return;}
-      document.getElementById("cres").innerHTML=`<b>Угадали!</b> На кону ${pot}.`;
-      document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ЕЩЁ</div><div class="cta" onclick="coinFlip(1)">🔢 ЕЩЁ</div><div class="cta ghost" onclick="coinCash()">ЗАБРАТЬ '+pot+'</div>';}
-    else{document.getElementById("cres").innerHTML=`<b style="color:var(--red)">Мимо.</b> Банк ${pot||stake} сгорел.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;}},900);}
+      if(capped){document.getElementById("cres").innerHTML=`<b>Потолок!</b>${cashed?" "+cashed+" фрагов ваши.":" Пять подряд просто так."}`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ${forStake()}</div>`;return;}
+      document.getElementById("cres").innerHTML=`<b>Угадали!</b>${pot?" На кону "+pot+".":" Просто так — крутим дальше."}`;
+      document.getElementById("cbtns").innerHTML='<div class="cta" onclick="coinFlip(0)">🦅 ЕЩЁ</div><div class="cta" onclick="coinFlip(1)">🔢 ЕЩЁ</div>'+(pot?'<div class="cta ghost" onclick="coinCash()">ЗАБРАТЬ '+pot+'</div>':'');}
+    else{document.getElementById("cres").innerHTML=`<b style="color:var(--red)">Мимо.</b>${stake?" Банк "+(pot||stake)+" сгорел.":" Просто так."}`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ${forStake()}</div>`;}},900);}
 async function coinCash(){try{if(LIVE){const d=await api("/api/coin/cash",{});settle(d.frags);pot=d.cashed;}else TF.set(balance+pot);}catch(e){fail("cres",e);return;}
-  document.getElementById("cres").innerHTML=`<b>Забрали ${pot}.</b> Умеете вовремя выйти.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ЗА ${stake}</div>`;}
+  document.getElementById("cres").innerHTML=`<b>Забрали ${pot}.</b> Умеете вовремя выйти.`;pot=0;document.getElementById("cbtns").innerHTML=`<div class="cta" onclick="coinReset()">ЗАНОВО ${forStake()}</div>`;}
 
 // dice vs house
 const FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];let diceBusy=false;
@@ -1327,14 +1348,14 @@ async function dice(){if(diceBusy)return;const note=needStake();diceBusy=true;
   const me=document.getElementById("dme"),bot=document.getElementById("dbot");[me,bot].forEach(e=>e.classList.add("roll"));
   const t=setInterval(()=>{me.textContent=pick(FACES);bot.textContent=pick(FACES)},90);
   setTimeout(()=>{clearInterval(t);[me,bot].forEach(e=>e.classList.remove("roll"));me.textContent=FACES[d.me-1];bot.textContent=FACES[d.house-1];
-    document.getElementById("dres").innerHTML=note+(d.win>stake?"<b>Ваша взяла!</b> +"+(d.win-stake)+" в кошелёк.":d.win===stake?"<b>Ничья.</b> Ставка вернулась.":"<b>Штаб выбросил больше.</b> Ставка ушла.");diceBusy=false;},1100);}
+    document.getElementById("dres").innerHTML=note+(d.win>stake?"<b>Ваша взяла!</b> "+plus(d.win-stake)+".":d.win===stake?"<b>Ничья.</b>"+(stake?" Ставка вернулась.":""):"<b>Штаб выбросил больше.</b>"+(stake?" Ставка ушла.":""));diceBusy=false;},1100);}
 
 // rps
 const RPS=["✊","✌️","✋"];
 function openRps(){openOv("ov-rps");document.getElementById("rres").textContent="Выбирайте — Штаб уже выбрал.";}
 async function rps(me){let d;try{d=await play("/api/play/rps",{pick:me},()=>{needStake();TF.set(balance-stake);const house=Math.floor(Math.random()*3);const win=me===house?stake:(me-house+3)%3===2?stake*2:0;if(win)TF.set(balance+win);return {house,win};});}catch(e){fail("rres",e);return;}
   document.getElementById("rme").textContent=RPS[me];document.getElementById("rbot").textContent=RPS[d.house];
-  document.getElementById("rres").innerHTML=d.win>stake?"<b>Победа!</b> +"+(d.win-stake)+" в кошелёк, Штаб в печали.":d.win===stake?"<b>Ничья.</b> Ставка возвращается.":"<b>Штаб забрал ставку.</b> Машины тоже умеют выигрывать.";}
+  document.getElementById("rres").innerHTML=d.win>stake?"<b>Победа!</b> "+plus(d.win-stake)+", Штаб в печали.":d.win===stake?"<b>Ничья.</b>"+(stake?" Ставка возвращается.":""):(stake?"<b>Штаб забрал ставку.</b>":"<b>Штаб выиграл.</b>")+" Машины тоже умеют выигрывать.";}
 
 // duels between people (live only)
 let duelTimer=null,myId=null;
@@ -1360,12 +1381,25 @@ function pickFilter(){const q=(document.getElementById("pick-q").value||"").toLo
 function pickBack(){pickCb=null;document.getElementById("ov-pick").classList.remove("on");}
 function pickChoose(id){const cb=pickCb;pickCb=null;document.getElementById("ov-pick").classList.remove("on");if(cb)cb(id);}
 
+// ---- the cabinet ----
+async function openRoster(){if(!LIVE){tgAlert("Кабинет работает только в Telegram.");return;}openOv("ov-roster");const res=document.getElementById("rosterres");res.textContent="Загружаю…";
+  try{const d=await api("/api/roster");res.textContent="";document.getElementById("roster-sum").textContent=`в клане ${d.members}`;
+    const row=e=>`<div class="duelrow"><span class="who">${esc(e.name)}</span><b style="color:var(--mut)">${e.at}</b></div>`;
+    document.getElementById("roster-left-n").textContent="−"+d.left.length;document.getElementById("roster-joined-n").textContent="+"+d.joined.length;
+    document.getElementById("roster-left").innerHTML=d.left.map(row).join("")||"<div class='note'>никто не ушёл</div>";
+    document.getElementById("roster-joined").innerHTML=d.joined.map(row).join("")||"<div class='note'>никто не пришёл</div>";}
+  catch(e){fail("rosterres",e);}}
+async function openInactive(){if(!LIVE){tgAlert("Кабинет работает только в Telegram.");return;}openOv("ov-inactive");const res=document.getElementById("inactiveres");res.textContent="Загружаю…";
+  try{const d=await api("/api/inactive");res.textContent="";document.getElementById("inactive-n").textContent=d.people.length;
+    document.getElementById("inactive-list").innerHTML=d.people.map(x=>`<div class="duelrow"><span class="who">${esc(x.name)}</span><b style="color:var(--mut)">${x.last?"с "+x.last+" · "+x.silent_days+" дн.":"ни одного сообщения"}</b></div>`).join("")||"<div class='note'>все писали за две недели</div>";}
+  catch(e){fail("inactiveres",e);}}
+
 // ---- gestures ----
 let GESTURES=null;
 async function openGestures(){if(!LIVE){tgAlert("Жесты работают только в Telegram — открой приложение из чата.");return;}
   openOv("ov-act");document.getElementById("actres").textContent="Жест уйдёт в Основной чат от твоего имени. Сначала жест — потом кого.";
   if(!GESTURES){try{GESTURES=await api("/api/gestures");}catch(e){fail("actres",e);return;}}
-  document.getElementById("act-grid").innerHTML=GESTURES.gestures.map(x=>`<div class="cta ghost" style="padding:10px 4px;margin:0;font-size:11px" onclick="actPick('${x.code}')">${esc(x.label)}</div>`).join("");
+  document.getElementById("act-grid").innerHTML=GESTURES.gestures.map(x=>`<div class="gchip" onclick="actPick('${x.code}')">${esc(x.label)}</div>`).join("");
   document.getElementById("act-self").textContent=GESTURES.self.label;}
 function actPick(code){const g=(GESTURES.gestures.find(x=>x.code===code)||{}).label||"";pickPerson(g+" — кого?",id=>actGo(code,id));}
 async function actGo(code,id){openOv("ov-act");document.getElementById("actres").textContent="Отправляю…";
@@ -1484,6 +1518,12 @@ setInterval(invitesRefresh,5000);
 function afterLive(){invitesRefresh();try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("lobby_"))openLobby(+sp.slice(6));}catch(e){}}
 
 function fitBig(){const b=document.getElementById("big");let size=46;b.style.fontSize=size+"px";while(b.scrollWidth>148&&size>26){size-=2;b.style.fontSize=size+"px";}}
-fitBig();paint(0);
+fitBig();paint(0);paintStake();
+if(INIT){document.body.classList.add("booting");["big","goal"].forEach(id=>document.getElementById(id).textContent="…");document.querySelectorAll(".tfv,#tf").forEach(e=>e.textContent="…");
+  document.querySelector(".sub").innerHTML="загружаю…";document.getElementById("paper").style.display="none";document.getElementById("pollcard").style.display="none";document.getElementById("mode").textContent="…";}
+loadLive().then(afterLive).catch(e=>{console.log("demo mode:",e.message);document.body.classList.remove("booting");
+  if(INIT){document.getElementById("mode").textContent="НЕТ СВЯЗИ";document.getElementById("big").textContent="—";document.querySelector(".sub").innerHTML=`Штаб не отвечает: ${esc(e.message)}<br><b style="color:var(--green)" onclick="location.reload()">Обновить</b>`;}
+  else document.getElementById("mode").textContent="ДЕМО";});
+
 </script>
 </body></html>
