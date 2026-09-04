@@ -942,7 +942,7 @@ F</span></div>
 </section>
 
 <section id="shop">
-  <h2>Лавка <span class="balance">99 999 ФР</span></h2>
+  <h2>Лавка <span class="balance"><span class="tfv">100</span> ФР</span></h2>
   <div class="note" style="text-align:left;margin:0 2px 12px">Фраги — за сообщения, победы и значки.<br>Тратятся только здесь, передать нельзя.</div>
   <div class="srow" onclick="go(BOT+'?start=reroll')"><div class="sic">🎭</div>
     <div class="sinfo"><div class="snm">Новая роль</div><div class="sds">перебросить «кто я сегодня»</div></div>
@@ -1250,7 +1250,7 @@ async function dice(){if(diceBusy)return;const note=needStake();diceBusy=true;
 // rps
 const RPS=["✊","✌️","✋"];
 function openRps(){openOv("ov-rps");document.getElementById("rres").textContent="Выбирайте — Штаб уже выбрал.";}
-async function rps(me){let d;try{d=await play("/api/play/rps",{pick:me},()=>{needStake();TF.set(balance-stake);const house=Math.floor(Math.random()*3);const win=me===house?stake:(me-house+3)%3===1?stake*2:0;if(win)TF.set(balance+win);return {house,win};});}catch(e){fail("rres",e);return;}
+async function rps(me){let d;try{d=await play("/api/play/rps",{pick:me},()=>{needStake();TF.set(balance-stake);const house=Math.floor(Math.random()*3);const win=me===house?stake:(me-house+3)%3===2?stake*2:0;if(win)TF.set(balance+win);return {house,win};});}catch(e){fail("rres",e);return;}
   document.getElementById("rme").textContent=RPS[me];document.getElementById("rbot").textContent=RPS[d.house];
   document.getElementById("rres").innerHTML=d.win>stake?"<b>Победа!</b> +"+d.win+" фрагов, Штаб в печали.":d.win===stake?"<b>Ничья.</b> Ставка возвращается.":"<b>Штаб забрал ставку.</b> Машины тоже умеют выигрывать.";}
 
