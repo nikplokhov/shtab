@@ -996,6 +996,9 @@ F</span></div>
   <div class="srow" id="quietrow" onclick="openQuiet()"><div class="sic">🤫</div>
     <div class="sinfo"><div class="snm">Тихий час</div><div class="sds" id="quietstate">игры и подначки на паузу</div></div>
     <div class="go">›</div></div>
+  <div class="srow" onclick="openCleanup()"><div class="sic">🧹</div>
+    <div class="sinfo"><div class="snm">Очистить тему</div><div class="sds">удалить всё, что бот видел в теме — Основной чат нельзя</div></div>
+    <div class="go">›</div></div>
   <div class="srow" onclick="openRoster()"><div class="sic">👥</div>
     <div class="sinfo"><div class="snm">Движение состава</div>
     <div class="sds" id="rosterline">за неделю: <b class="up">+0 пришли</b> · <b class="down">−0 вышли</b></div></div>
@@ -1136,6 +1139,14 @@ F</span></div>
   <div class="qcard"><div class="result" id="quietres" style="min-height:0;margin-bottom:12px"></div>
     <div class="rowline" style="margin-bottom:8px">НА СКОЛЬКО</div><div class="chips" id="quiet-hours"></div>
     <div class="btn2"><div class="cta" onclick="quietGo(true)">ВКЛЮЧИТЬ</div><div class="cta ghost" onclick="quietGo(false)">ВЫКЛЮЧИТЬ</div></div></div>
+</div></div>
+
+<div class="overlay" id="ov-cleanup"><div class="ov">
+  <div class="ovhead"><div class="back" onclick="closeOv()">‹</div><h2>🧹 Очистить тему</h2></div>
+  <div class="qcard"><div class="note" style="text-align:left;margin:0 0 10px">Бот удалит все сообщения, которые видел в теме с момента запуска. Основной чат защищён. Итог придёт в личку бота.</div>
+    <div class="rowline" style="margin-bottom:8px">КАКУЮ</div><div class="chips" id="clean-topics"></div>
+    <div class="result" id="cleanres" style="min-height:0"></div>
+    <div class="cta" onclick="cleanupGo()">ОЧИСТИТЬ</div></div>
 </div></div>
 
 <div class="overlay" id="ov-roster"><div class="ov">
@@ -1325,7 +1336,7 @@ async function loadLive(){
   const lines=[];if(home.pair_users)lines.push(`💘 <b>Парочка дня:</b> ${linkName(home.pair_users[0].name,home.pair_users[0].username)} + ${linkName(home.pair_users[1].name,home.pair_users[1].username)} — свело газетой до полуночи`);
   if(home.new_badges.length)lines.push(`🏅 <b>Новые значки:</b> ${home.new_badges.slice(0,3).map(b=>`${esc(b.title)} — ${esc(b.name)}`).join(" · ")}`);
   lines.push("🌙 <b>Вечером в 20:30</b> — вопрос вечера");
-  document.getElementById("paper").innerHTML=`<h2><span style="display:flex;align-items:center;gap:9px">📰 Газета</span><span class="pill">ВЧЕРА</span></h2>
+  document.getElementById("paper").style.display="";document.getElementById("paper").innerHTML=`<h2><span style="display:flex;align-items:center;gap:9px">📰 Газета</span><span class="pill">ВЧЕРА</span></h2>
     <div class="rowline" style="margin-bottom:10px"><span>ВЧЕРА В ЧАТЕ</span><b>${y.messages.toLocaleString("ru-RU")} сообщ. · ${y.people} чел.</b></div>${paperTop}
     <div class="hr" style="margin:12px 0"></div><div class="sds" style="font-size:12px;line-height:1.6">${lines.join("<br>")}</div>`;
   // the open poll, or nothing
@@ -1477,7 +1488,7 @@ async function openGuide(){openOv("ov-guide");const box=document.getElementById(
   box.innerHTML=GUIDE.replace(/<code>/g,"<b>").replace(/<\/code>/g,"</b>");}
 
 // ---- the cabinet ----
-let TOPICS=null,QUIET=null;const SEL={ann:1,vote:1,mus:1,all:1,hours:24,quiet:2};
+let TOPICS=null,QUIET=null;const SEL={ann:1,vote:1,mus:1,all:1,hours:24,quiet:2,clean:null};
 function val(id){return (document.getElementById(id).value||"").trim();}
 function person(p){return p.username?`<span class="who lnk" onclick="go('https://t.me/${p.username}')">${esc(p.name)}</span>`:`<span class="who" onclick="tgAlert('У этого человека скрыт юзернейм — открыть профиль можно только из чата.')">${esc(p.name)}</span>`;}
 function chips(boxId,key,items,fmt){const box=document.getElementById(boxId);box.innerHTML="";items.forEach(v=>{const sp=document.createElement("span");sp.textContent=fmt?fmt(v):v;sp.className=String(v.thread!==undefined?v.thread:v)===String(SEL[key])?"on":"";
@@ -1495,6 +1506,11 @@ function paintQuiet(){const st=document.getElementById("quietstate");if(st)st.in
   const r=document.getElementById("quietres");if(r)r.innerHTML=QUIET?`<b style="color:var(--amber)">${esc(QUIET)}</b> Игры, подначки и жесты ждут.`:"Сейчас тихого часа нет.";}
 function openQuiet(){if(!needLive())return;openOv("ov-quiet");chips("quiet-hours","quiet",[1,2,4],h=>h+" ч");paintQuiet();}
 async function quietGo(on){try{const d=await api("/api/quiet",{on,hours:SEL.quiet});QUIET=d.quiet;paintQuiet();document.getElementById("quietres").innerHTML="<b>"+esc(d.done)+"</b>";}catch(e){fail("quietres",e);}}
+async function openCleanup(){if(!needLive())return;openOv("ov-cleanup");document.getElementById("cleanres").textContent="";
+  if(!TOPICS){try{TOPICS=(await api("/api/topics")).topics;}catch(e){TOPICS=[];}}
+  const list=TOPICS.filter(t=>t.thread!==1);SEL.clean=SEL.clean||(list[0]&&list[0].thread);chips("clean-topics","clean",list,t=>t.title);}
+async function cleanupGo(){const t=(TOPICS||[]).find(x=>x.thread===SEL.clean);if(!t){fail("cleanres","Выбери тему.");return;}
+  if(!(await tgConfirm(`Удалить все сообщения в «${t.title}»? Вернуть их будет нельзя.`)))return;cabinetPost("/api/cleanup",{thread:SEL.clean},"cleanres");}
 async function openRoster(){if(!needLive())return;openOv("ov-roster");const res=document.getElementById("rosterres");res.textContent="Загружаю…";
   try{const d=await api("/api/roster");res.textContent="";document.getElementById("roster-sum").textContent=`в клане ${d.members}`;
     const row=(e,cls)=>`<div class="duelrow ${cls}">${person(e)}<b style="color:var(--mut)">${e.at}</b></div>`;
