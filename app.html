@@ -172,6 +172,12 @@ textarea.inp{min-height:96px;resize:vertical;line-height:1.4}
 .duelrow.warn{border-left:3px solid var(--amber);padding-left:10px}
 .who.lnk,.tname .lnk,.nm .lnk{color:var(--green);cursor:pointer}
 .who.lnk::after{content:" ›";color:var(--mut)}
+.qrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line2)}
+.qrow:last-child{border-bottom:0}
+.qrow .qi{flex:1;min-width:0}.qrow .qt{font-weight:700;font-size:13px}.qrow .qh{font-size:11px;color:var(--mut);margin-top:2px}
+.qbar{height:5px;border-radius:3px;background:#132238;margin-top:6px;overflow:hidden}.qbar i{display:block;height:100%;background:linear-gradient(90deg,#3fae5a,#7fe08a)}
+.qbtn{flex:0 0 auto;padding:8px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.qbtn.take{background:linear-gradient(180deg,#b6ff9e,#7ce07a);color:#0a1322;cursor:pointer}.qbtn.wait{color:var(--mut);border:1px solid var(--line2)}.qbtn.ok{color:var(--green)}
 .guide b{color:var(--txt)}.guide i{color:var(--mut)}
 #act-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
 .gchip{padding:12px 8px;border-radius:14px;border:1px solid #2f6b40;background:#12301f;color:var(--green);font-size:13px;font-weight:600;letter-spacing:0;text-align:center;display:flex;align-items:center;justify-content:center;min-height:46px;line-height:1.25;cursor:pointer}
@@ -779,6 +785,19 @@ F</span></div>
     </div>
   </div>
 
+  <div class="card" id="quests" style="display:none">
+    <h2><span style="display:flex;align-items:center;gap:9px">🎯 Задания дня</span><span class="pill" id="quests-pill">3 НА СЕГОДНЯ</span></h2>
+    <div id="quests-list"></div>
+    <div class="result" id="questres" style="min-height:0;margin:6px 0 0"></div>
+  </div>
+  <div class="card" id="tourn" style="display:none">
+    <h2><span style="display:flex;align-items:center;gap:9px">🏆 Турнир недели</span><span class="pill" id="tourn-pill">ДО ВС 20:00</span></h2>
+    <div class="note" style="text-align:left;margin:0 0 10px" id="tourn-rules"></div>
+    <div id="tourn-list"></div>
+    <div class="rowline" style="margin-top:10px"><span>ПРИЗ</span><b id="tourn-prize" style="color:var(--amber)"></b></div>
+    <div class="rowline" id="tourn-last" style="margin-top:6px;display:none"><span>ПРОШЛАЯ НЕДЕЛЯ</span><b id="tourn-last-name"></b></div>
+    <div class="cta ghost" style="margin:12px 0 0;padding:12px" onclick="showTab('games')">ИГРАТЬ С ЛЮДЬМИ</div>
+  </div>
   <div class="card" id="paper">
     <h2><span style="display:flex;align-items:center;gap:9px">📰 Газета</span><span class="pill">СЕГОДНЯ 09:00</span></h2>
     <div class="rowline" style="margin-bottom:10px"><span>ВЧЕРА В ЧАТЕ</span><b>1 299 сообщ. · 26 чел.</b></div>
@@ -1480,6 +1499,20 @@ function pickFilter(){const q=(document.getElementById("pick-q").value||"").toLo
 function pickBack(){pickCb=null;document.getElementById("ov-pick").classList.remove("on");}
 function pickChoose(id){const cb=pickCb;pickCb=null;document.getElementById("ov-pick").classList.remove("on");if(cb)cb(id);}
 
+// ---- daily quests & the tournament ----
+function paintQuests(d){const box=document.getElementById("quests-list");const card=document.getElementById("quests");card.style.display="";
+  const open=d.quests.filter(q=>!q.claimed).length;document.getElementById("quests-pill").textContent=open?`${open} ОСТАЛОСЬ`:"ВСЁ ЗАБРАНО";
+  box.innerHTML=d.quests.map(q=>`<div class="qrow"><div class="qi"><div class="qt">${esc(q.title)}</div><div class="qh">${esc(q.hint)} · ${q.have}/${q.need}</div><div class="qbar"><i style="width:${Math.round(100*q.have/q.need)}%"></i></div></div>
+    ${q.claimed?'<div class="qbtn ok">✓ +'+q.reward+'</div>':q.done?`<div class="qbtn take" onclick="questClaim('${q.code}')">ЗАБРАТЬ +${q.reward}</div>`:'<div class="qbtn wait">+'+q.reward+'</div>'}</div>`).join("");}
+async function loadQuests(){try{paintQuests(await api("/api/quests"));}catch(e){}}
+async function questClaim(code){const r=document.getElementById("questres");r.textContent="Забираю…";
+  try{const d=await api("/api/quests/claim",{code});settle(d.frags,d.reward);paintQuests(d);r.innerHTML="<b class='up'>"+esc(d.done)+"</b>";}catch(e){fail("questres",e);}}
+async function loadTournament(){try{const d=await api("/api/tournament");const card=document.getElementById("tourn");card.style.display="";
+    document.getElementById("tourn-pill").textContent=d.closed?"ПОДВОДИМ ИТОГИ":"ДО "+d.closes;document.getElementById("tourn-rules").textContent=d.rules;document.getElementById("tourn-prize").textContent=d.prize;
+    const med=["g","s","b"];document.getElementById("tourn-list").innerHTML=d.top.slice(0,5).map((r,i)=>`<div class="trow"${r.me?' style="background:#12301f;border-radius:12px;padding:8px 10px"':''}><div class="place ${med[i]||""}">${i+1}</div><div class="tinfo"><div class="tname">${linkName(r.name,r.username)}${r.me?' <span style="color:var(--green)">· ты</span>':''}</div></div><div class="tval">${r.points}<small>${r.wins} побед · ${r.games} игр</small></div></div>`).join("")||"<div class='note'>на этой неделе ещё никто не играл с людьми — будь первым</div>";
+    if(d.me&&d.me.place>5)document.getElementById("tourn-list").innerHTML+=`<div class="note">ты на ${d.me.place}-м месте · ${d.me.points} очк.</div>`;
+    const last=document.getElementById("tourn-last");if(d.last){last.style.display="";document.getElementById("tourn-last-name").innerHTML="🏆 "+linkName(d.last.name,d.last.username);}else last.style.display="none";}catch(e){}}
+
 // ---- the guide ----
 let GUIDE=null;
 async function openGuide(){openOv("ov-guide");const box=document.getElementById("guide-body");
@@ -1646,7 +1679,7 @@ async function lobbyAct(action,extra){try{const d=await api("/api/lobby/"+action
 async function invitesRefresh(){if(!LIVE)return;try{const d=await api("/api/lobby/list");const mine=d.invites;
   document.getElementById("invites").innerHTML=document.getElementById("invites-main").innerHTML=mine.map(lb=>`<div class="wolf" style="border-color:#2f6b40;cursor:pointer" onclick="openLobby(${lb.id})"><span style="font-size:22px">${lb.icon}</span><span><b>${lb.state==="playing"?"Партия идёт":lb.you_host?"Твоя игра":"Тебя зовут"}:</b> ${esc(lb.host)} · ${esc(lb.title)} · ${lb.stake?lb.stake+" фр":"просто так"} <span style="color:var(--green)">→ зайти</span></span></div>`).join("");}catch(e){}}
 setInterval(invitesRefresh,5000);
-function afterLive(){invitesRefresh();try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("lobby_"))openLobby(+sp.slice(6));else if(sp.startsWith("duel_"))openDuel();}catch(e){}}
+function afterLive(){invitesRefresh();loadQuests();loadTournament();try{const sp=(Telegram.WebApp.initDataUnsafe||{}).start_param||"";if(sp.startsWith("lobby_"))openLobby(+sp.slice(6));else if(sp.startsWith("duel_"))openDuel();}catch(e){}}
 
 function fitBig(){const b=document.getElementById("big");let size=46;b.style.fontSize=size+"px";while(b.scrollWidth>148&&size>26){size-=2;b.style.fontSize=size+"px";}}
 fitBig();paint(0);paintStake();
