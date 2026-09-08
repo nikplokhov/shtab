@@ -1126,10 +1126,14 @@ F</span></div>
     <input class="inp" id="vote-q" placeholder="Кастомка в субботу?">
     <div class="rowline" style="margin-bottom:8px">ВАРИАНТЫ — КАЖДЫЙ С НОВОЙ СТРОКИ</div>
     <textarea class="inp" id="vote-opts" placeholder="Иду&#10;Не иду"></textarea>
+    <div class="rowline" style="margin-bottom:8px">КАРТИНКА <span style="color:var(--mut)">· необязательно</span></div>
+    <input type="file" id="vote-img" accept="image/*" style="display:none" onchange="voteImgPick(this)">
+    <div class="btn2" style="margin-bottom:10px"><div class="cta ghost" style="padding:11px;font-size:11px" onclick="document.getElementById('vote-img').click()">📎 ВЫБРАТЬ ФОТО</div><div class="cta ghost" id="vote-img-clear" style="padding:11px;font-size:11px;display:none" onclick="voteImgClear()">✕ УБРАТЬ</div></div>
+    <img id="vote-img-preview" style="display:none;width:100%;border-radius:14px;margin:0 0 10px;max-height:220px;object-fit:cover">
     <div class="rowline" style="margin-bottom:8px">СКОЛЬКО ДЛИТСЯ</div><div class="chips" id="vote-hours"></div>
     <div class="rowline" style="margin-bottom:8px">КУДА</div><div class="chips" id="vote-topics"></div>
     <div class="result" id="voteres" style="min-height:0"></div>
-    <div class="cta" onclick="cabinetPost('/api/poll',{question:val('vote-q'),options:val('vote-opts').split('\n').map(x=>x.trim()).filter(Boolean),hours:SEL.hours,thread:SEL.vote},'voteres',()=>{document.getElementById('vote-q').value='';document.getElementById('vote-opts').value=''})">ЗАПУСТИТЬ</div></div>
+    <div class="cta" onclick="voteGo()">ЗАПУСТИТЬ</div></div>
 </div></div>
 
 <div class="overlay" id="ov-muster"><div class="ov">
@@ -1361,10 +1365,11 @@ async function loadLive(){
   // the open poll, or nothing
   const pc=document.getElementById("pollcard");
   if(!home.polls.length)pc.style.display="none";else{const poll=home.polls[0];const total=poll.options.reduce((a,x)=>a+x.votes,0)||1;pc.style.display="";
-    pc.innerHTML=`<h2><span style="display:flex;align-items:center;gap:9px">🗳 Голосование</span><span class="pill">ДО ${esc(poll.closes)}</span></h2>
+    pc.innerHTML=(poll.photo?`<img id="poll-img" style="display:none;width:100%;border-radius:14px;margin:0 0 12px;max-height:260px;object-fit:cover">`:"")+`<h2><span style="display:flex;align-items:center;gap:9px">🗳 Голосование</span><span class="pill">ДО ${esc(poll.closes)}</span></h2>
       <div class="sds" style="font-size:13px;margin-bottom:12px">${esc(poll.question)}</div>`
       +poll.options.map((o,i)=>`<div class="rowline"${i?' style="margin-top:9px"':''}><span>${esc(o.text)}${o.mine?' <span style="color:var(--green)">· твой голос</span>':''}</span><b class="${i?'':'up'}">${o.votes}</b></div><div class="tbar"><i style="width:${Math.round(100*o.votes/total)}%${i?';background:#4a5d78':''}"></i></div>`).join("")
-      +`<div class="cta" style="margin:12px 0 0;padding:12px" onclick="go('${poll.link}')">${poll.options.some(o=>o.mine)?"ПЕРЕГОЛОСОВАТЬ В ТЕМЕ":"ГОЛОСОВАТЬ В ТЕМЕ"}</div>`;}
+      +`<div class="cta" style="margin:12px 0 0;padding:12px" onclick="go('${poll.link}')">${poll.options.some(o=>o.mine)?"ПЕРЕГОЛОСОВАТЬ В ТЕМЕ":"ГОЛОСОВАТЬ В ТЕМЕ"}</div>`;
+    if(poll.photo)fetch(API+"/api/poll/image?id="+poll.id,{headers:{"X-Init-Data":INIT}}).then(r=>r.ok?r.blob():null).then(b=>{const img=document.getElementById("poll-img");if(b&&img){img.src=URL.createObjectURL(b);img.style.display="";}}).catch(()=>{});}
 }
 
 // ---- games: one implementation, server when live, dice when demo ----
@@ -1531,6 +1536,18 @@ function needLive(){if(!LIVE){tgAlert("Кабинет работает толь�
 async function cabinetPost(path,body,resId,ok){const box=document.getElementById(resId);box.textContent="Отправляю…";
   try{const d=await api(path,body);box.innerHTML="<b>"+esc(d.done)+"</b>";if(ok)ok(d);}catch(e){fail(resId,e);}}
 async function openAnnounce(){if(!needLive())return;openOv("ov-announce");document.getElementById("annres").textContent="";await topicChips("ann-topics","ann");}
+let VOTE_FILE=null;
+function voteImgPick(inp){const f=inp.files&&inp.files[0];if(!f)return;if(f.size>10*1024*1024){tgAlert("Картинка больше 10 МБ.");inp.value="";return;}VOTE_FILE=f;
+  const img=document.getElementById("vote-img-preview");img.src=URL.createObjectURL(f);img.style.display="";document.getElementById("vote-img-clear").style.display="";}
+function voteImgClear(){VOTE_FILE=null;document.getElementById("vote-img").value="";document.getElementById("vote-img-preview").style.display="none";document.getElementById("vote-img-clear").style.display="none";}
+async function apiForm(path,form){const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),60000);let r;
+  try{r=await fetch(API+path,{method:"POST",headers:{"X-Init-Data":INIT},body:form,signal:ctl.signal});}catch(e){throw new Error(e.name==="AbortError"?"Штаб не ответил за минуту — картинка большая или связь слабая.":"Нет связи со Штабом.");}finally{clearTimeout(t);}
+  const d=await r.json().catch(()=>({error:"Сервер молчит"}));if(!r.ok)throw new Error(d.error||("HTTP "+r.status));return d;}
+async function voteGo(){const box=document.getElementById("voteres");const options=val("vote-opts").split("\n").map(x=>x.trim()).filter(Boolean);
+  const done=()=>{document.getElementById("vote-q").value="";document.getElementById("vote-opts").value="";voteImgClear();loadLive().catch(()=>{});};
+  if(!VOTE_FILE){cabinetPost("/api/poll",{question:val("vote-q"),options,hours:SEL.hours,thread:SEL.vote},"voteres",done);return;}
+  box.textContent="Отправляю с картинкой…";const fd=new FormData();fd.append("question",val("vote-q"));options.forEach(o=>fd.append("options",o));fd.append("hours",String(SEL.hours));fd.append("thread",String(SEL.vote));fd.append("image",VOTE_FILE,VOTE_FILE.name||"poll.jpg");
+  try{const d=await apiForm("/api/poll",fd);box.innerHTML="<b>"+esc(d.done)+"</b>";done();}catch(e){fail("voteres",e);}}
 async function openVote(){if(!needLive())return;openOv("ov-vote");document.getElementById("voteres").textContent="";chips("vote-hours","hours",[6,24,72],h=>h<24?h+" ч":(h/24)+" дн.");await topicChips("vote-topics","vote");}
 async function openMuster(){if(!needLive())return;openOv("ov-muster");document.getElementById("musres").textContent="";await topicChips("mus-topics","mus");}
 async function openCallAll(){if(!needLive())return;openOv("ov-all");document.getElementById("allres").textContent="";await topicChips("all-topics","all");}
