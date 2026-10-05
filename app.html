@@ -1132,7 +1132,7 @@ F</span></div>
     <img id="vote-img-preview" style="display:none;width:100%;max-height:260px;object-fit:contain;background:#0b1526;border-radius:14px;margin:0 0 10px">
     <div class="rowline" style="margin-bottom:8px">СКОЛЬКО ДЛИТСЯ</div><div class="chips" id="vote-hours"></div>
     <div class="rowline" style="margin-bottom:8px">ТИП</div><div class="chips" id="vote-remind"></div>
-    <div class="note" id="vote-remind-note" style="display:none;margin:0 0 10px">Конец голосования = время сбора: за 30 минут бот пингует всех, кто записался (кто выбрал «не иду» — не трогает).</div>
+    <div class="note" id="vote-remind-note" style="display:none;margin:0 0 10px">Напиши время прямо в вопросе — «Кастомка в субботу 21:00?» — бот сам закроет запись за 3 часа до начала, выложит список идущих и напомнит им за 30 минут. Без времени в вопросе напомнит за 30 минут до конца голосования.</div>
     <div class="rowline" style="margin-bottom:8px">КУДА</div><div class="chips" id="vote-topics"></div>
     <div class="result" id="voteres" style="min-height:0"></div>
     <div class="cta" onclick="voteGo()">ЗАПУСТИТЬ</div></div>
@@ -1547,12 +1547,14 @@ function voteImgClear(){VOTE_FILE=null;document.getElementById("vote-img").value
 async function apiForm(path,form){const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),60000);let r;
   try{r=await fetch(API+path,{method:"POST",headers:{"X-Init-Data":INIT},body:form,signal:ctl.signal});}catch(e){throw new Error(e.name==="AbortError"?"Штаб не ответил за минуту — картинка большая или связь слабая.":"Нет связи со Штабом.");}finally{clearTimeout(t);}
   const d=await r.json().catch(()=>({error:"Сервер молчит"}));if(!r.ok)throw new Error(d.error||("HTTP "+r.status));return d;}
-async function voteGo(){const box=document.getElementById("voteres");const options=val("vote-opts").split("\n").map(x=>x.trim()).filter(Boolean);
+let VOTE_BUSY=false;
+async function voteGo(){if(VOTE_BUSY)return;VOTE_BUSY=true;setTimeout(()=>{VOTE_BUSY=false;},8000);
+  const box=document.getElementById("voteres");const options=val("vote-opts").split("\n").map(x=>x.trim()).filter(Boolean);
   const done=()=>{document.getElementById("vote-q").value="";document.getElementById("vote-opts").value="";voteImgClear();loadLive().catch(()=>{});};
   if(!VOTE_FILE){cabinetPost("/api/poll",{question:val("vote-q"),options,hours:SEL.hours,thread:SEL.vote,remind:SEL.remind?"1":""},"voteres",done);return;}
   box.textContent="Отправляю с картинкой…";const fd=new FormData();fd.append("question",val("vote-q"));options.forEach(o=>fd.append("options",o));fd.append("hours",String(SEL.hours));fd.append("thread",String(SEL.vote));fd.append("remind",SEL.remind?"1":"");fd.append("image",VOTE_FILE,VOTE_FILE.name||"poll.jpg");
   try{const d=await apiForm("/api/poll",fd);box.innerHTML="<b>"+esc(d.done)+"</b>";done();}catch(e){fail("voteres",e);}}
-async function openVote(){if(!needLive())return;openOv("ov-vote");document.getElementById("voteres").textContent="";chips("vote-hours","hours",[6,24,72],h=>h<24?h+" ч":(h/24)+" дн.");
+async function openVote(){if(!needLive())return;openOv("ov-vote");document.getElementById("voteres").textContent="";chips("vote-hours","hours",[6,24,72,168],h=>h<24?h+" ч":(h/24)+" дн.");
   SEL.remind=0;chips("vote-remind","remind",[0,1],v=>v?"⏰ Созыв":"Обычное");
   document.getElementById("vote-remind").onclick=()=>{document.getElementById("vote-remind-note").style.display=SEL.remind?"":"none";};
   await topicChips("vote-topics","vote");}
